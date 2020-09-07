@@ -153,7 +153,7 @@ void wyszukajPoNazwisku(vector<Adresat> kontakty) {
 }
 
 
-void zapiszDoPliku(vector <Adresat> kontakty) {
+void zapiszDoPlikuKontakty(vector <Adresat> kontakty) {
 
     fstream plik;
     plik.open("ListaKontaktow.txt",ios::out);
@@ -257,7 +257,7 @@ void usunAdresata(vector <Adresat> &kontakty) {
     }
 
 
-    zapiszDoPliku(kontakty);
+    zapiszDoPlikuKontakty(kontakty);
 }
 
 void modyfikujKontakt(vector <Adresat> &kontakty) {
@@ -329,7 +329,7 @@ void modyfikujKontakt(vector <Adresat> &kontakty) {
         cout<<"Brak kontaktow do modyfikacji. Rozpocznij dodawanie kontaktow."<<endl;
         system("pause");
     }
-    zapiszDoPliku(kontakty);
+    zapiszDoPlikuKontakty(kontakty);
 }
 
 void wyswietlMenuUzytkownika() {
@@ -351,7 +351,7 @@ void wyswietlMenuUzytkownika() {
         if(wybor=='1') {
             system("cls");
             kontakty.push_back(dodajKontakt(kontakty));
-            zapiszDoPliku(kontakty);
+            zapiszDoPlikuKontakty(kontakty);
         } else if(wybor=='2') {
             system("cls");
             wyszukajPoImieniu(kontakty);
@@ -367,7 +367,7 @@ void wyswietlMenuUzytkownika() {
         } else if(wybor=='6') {
             modyfikujKontakt(kontakty);
         } else if(wybor=='9') {
-            zapiszDoPliku(kontakty);
+            zapiszDoPlikuKontakty(kontakty);
             exit(0);
         }
     }
@@ -399,7 +399,7 @@ int main() {
             cin>>uzytkownikDoDodania.nazwa;
             cout<<"Podaj haslo uzytkownika: ";
             cin>>uzytkownikDoDodania.haslo;
-            uzytkownikDoDodania.idUzytkownika=1;
+            uzytkownikDoDodania.idUzytkownika=uzytkownicy.size()+1;
 
             uzytkownicy.push_back(uzytkownikDoDodania);
 
@@ -407,6 +407,8 @@ int main() {
             cout<<"Haslo to: "<<uzytkownicy[0].haslo<<endl;
             cout<<"IdUzytkownika to: "<<uzytkownicy[0].idUzytkownika<<endl;
             system("pause");
+
+
 
         }  else if(wybor=='3') {
             exit(0);
