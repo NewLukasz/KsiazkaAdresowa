@@ -237,8 +237,8 @@ void usunAdresata(vector <Adresat> &kontakty) {
                 cout<<"Nie mozna usunac kontaktu. Dokonaj edycji."<<endl;
                 system("pause");
             } else {
-                for(int i=0;i<kontakty.size();i++){
-                    if(kontakty[i].id==numerIDAdresataDoUsuniecia){
+                for(int i=0; i<kontakty.size(); i++) {
+                    if(kontakty[i].id==numerIDAdresataDoUsuniecia) {
                         kontakty.erase(kontakty.begin()+i);
                     }
                 }
@@ -327,8 +327,7 @@ void modyfikujKontakt(vector <Adresat> &kontakty) {
     zapiszDoPliku(kontakty);
 }
 
-
-int main() {
+void wyswietlMenuUzytkownika() {
     vector <Adresat> kontakty=odczytajKontaktyZPliku();
     int iloscKontakow=kontakty.size();
     char wybor;
@@ -367,5 +366,26 @@ int main() {
             exit(0);
         }
     }
-    return 0;
+}
+
+
+int main() {
+
+    char wybor;
+    while(1) {
+        system("cls");
+
+        cout<<"1. Logowanie"<<endl;
+        cout<<"2. Rejestracja"<<endl;
+        cout<<"3. Zamknij program"<<endl;
+
+        wybor=_getch();
+        if(wybor=='1') {
+            wyswietlMenuUzytkownika();
+        } else if(wybor=='2') {
+            system("cls");
+        }  else if(wybor=='3') {
+            exit(0);
+        }
+    }
 }
