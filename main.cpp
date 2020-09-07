@@ -373,6 +373,63 @@ void wyswietlMenuUzytkownika() {
     }
 }
 
+void zapiszDoPlikuUzytkownicy(vector <Uzytkownik> uzytkownicy) {
+
+    fstream plik;
+    plik.open("ListaUzytkownikow.txt",ios::out);
+
+    for (int i=0; i<=uzytkownicy.size()-1; i++) {
+        plik<<uzytkownicy[i].idUzytkownika<<"|";
+        plik<<uzytkownicy[i].nazwa<<"|";
+        plik<<uzytkownicy[i].haslo<<"|"<<endl;
+    }
+    plik.close();
+    cout<<"\nPlik z lista uzytkownikow zostal pomyslnie zaktualizowany.\n";
+    system("pause");
+}
+
+vector <Uzytkownik> odczytajUzytkownikowZPliku() {
+    vector <Uzytkownik> uzytkownicy;
+    fstream plik;
+    plik.open("ListaUzytkownikow.txt",ios::in);
+    if(plik.good()==true) {
+        string liniaZDanymi;
+        int iloscUzytkownikow=0;
+        int i=1;
+        int const ILOSC_KOLUMN=3;
+        int tablicaIndeksowPodzialow[ILOSC_KOLUMN];
+        while(getline(plik,liniaZDanymi)) {
+            int indeksWykryciaZnakuPodzialu=0;
+            for(int k=0; k<liniaZDanymi.length(); k++) {
+                if(liniaZDanymi[k]=='|') {
+                    tablicaIndeksowPodzialow[indeksWykryciaZnakuPodzialu]=k;
+                    indeksWykryciaZnakuPodzialu++;
+                }
+            }
+
+
+            string idString(liniaZDanymi,0,tablicaIndeksowPodzialow[0]);
+            int id = atoi(idString.c_str());
+            string nazwa(liniaZDanymi,tablicaIndeksowPodzialow[0]+1,tablicaIndeksowPodzialow[1]-tablicaIndeksowPodzialow[0]-1);
+            string haslo(liniaZDanymi,tablicaIndeksowPodzialow[1]+1,tablicaIndeksowPodzialow[2]-tablicaIndeksowPodzialow[1]-1);
+
+
+            Uzytkownik uzytkownikDoPrzesylaniaDanych;
+            uzytkownikDoPrzesylaniaDanych.idUzytkownika=id;
+            uzytkownikDoPrzesylaniaDanych.nazwa=nazwa;
+            uzytkownikDoPrzesylaniaDanych.haslo=haslo;
+
+            uzytkownicy.push_back(uzytkownikDoPrzesylaniaDanych);
+            i++;
+        }
+        plik.close();
+        return uzytkownicy;
+    } else {
+        cout<<"Brak uzytkownikow - rozpocznij dodawanie"<<endl;
+        return uzytkownicy;
+    }
+}
+
 
 int main() {
 
@@ -392,7 +449,9 @@ int main() {
 
             cout<<"Proces rejestracji..."<<endl;
 
-            vector <Uzytkownik> uzytkownicy;
+
+
+            vector <Uzytkownik> uzytkownicy=odczytajUzytkownikowZPliku();
             Uzytkownik uzytkownikDoDodania;
 
             cout<<"Podaj nazwe uzytkownika: ";
@@ -403,12 +462,13 @@ int main() {
 
             uzytkownicy.push_back(uzytkownikDoDodania);
 
-            cout<<"Nazwa to: "<<uzytkownicy[0].nazwa<<endl;
-            cout<<"Haslo to: "<<uzytkownicy[0].haslo<<endl;
-            cout<<"IdUzytkownika to: "<<uzytkownicy[0].idUzytkownika<<endl;
-            system("pause");
+            cout<<"Nazwa to: "<<uzytkownicy[uzytkownicy.size()-1].nazwa<<endl;
+            cout<<"Haslo to: "<<uzytkownicy[uzytkownicy.size()-1].haslo<<endl;
+            cout<<"IdUzytkownika to: "<<uzytkownicy[uzytkownicy.size()-1].idUzytkownika<<endl;
 
+            zapiszDoPlikuUzytkownicy(uzytkownicy);
 
+            //system("pause");
 
         }  else if(wybor=='3') {
             exit(0);
