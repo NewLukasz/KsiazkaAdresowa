@@ -2,5 +2,7 @@
 *.depend
 *.layout
 *.txt
+*.exe
+*.o
 bin/
 obj/
