@@ -332,7 +332,7 @@ void modyfikujKontakt(vector <Adresat> &kontakty) {
     zapiszDoPlikuKontakty(kontakty);
 }
 
-void wyswietlMenuUzytkownika() {
+void uruchomMenuUzytkownika() {
     vector <Adresat> kontakty=odczytajKontaktyZPliku();
     int iloscKontakow=kontakty.size();
     char wybor;
@@ -449,6 +449,25 @@ void zarejestrujUzytkownika() {
     zapiszDoPlikuUzytkownicy(uzytkownicy);
 }
 
+void logowanie() {
+    string podanaNazwa, podaneHaslo="";
+    vector <Uzytkownik> uzytkownicy=odczytajUzytkownikowZPliku();
+    system("cls");
+    cout<<"Podaj nazwe uzytkownika: ";
+    cin>>podanaNazwa;
+
+    for(int i=0; i<=uzytkownicy.size(); i++) {
+        if(podanaNazwa==uzytkownicy[i].nazwa) {
+            cout<<"Podaj haslo uzytkownika: ";
+            cin>>podaneHaslo;
+            if(podaneHaslo==uzytkownicy[i].haslo) {
+                uruchomMenuUzytkownika();
+            } else cout<<"Podano nieprawidlowe haslo"<<endl;
+        } else if(i==uzytkownicy.size()&&podaneHaslo=="") cout<<"Uzytkownik o nazwie "<<podanaNazwa<<" nie posiada jeszcze konta"<<endl;
+    }
+    system("pause");
+}
+
 int main() {
 
     char wybor;
@@ -461,7 +480,7 @@ int main() {
 
         wybor=_getch();
         if(wybor=='1') {
-            wyswietlMenuUzytkownika();
+            logowanie();
         } else if(wybor=='2') {
             system("cls");
             zarejestrujUzytkownika();
