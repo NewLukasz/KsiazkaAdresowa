@@ -13,6 +13,11 @@ struct Adresat {
     int id,numerTelefonu;
 };
 
+struct Uzytkownik{
+    int idUzytkownika;
+    string nazwa,haslo;
+};
+
 int weryfikacjaPoprawnosciNumeru() {
     int poprawnyNumerTelefonu=0;
     while(!(cin>>poprawnyNumerTelefonu)) {
@@ -384,6 +389,25 @@ int main() {
             wyswietlMenuUzytkownika();
         } else if(wybor=='2') {
             system("cls");
+
+            cout<<"Proces rejestracji..."<<endl;
+
+            vector <Uzytkownik> uzytkownicy;
+            Uzytkownik uzytkownikDoDodania;
+
+            cout<<"Podaj nazwe uzytkownika: ";
+            cin>>uzytkownikDoDodania.nazwa;
+            cout<<"Podaj haslo uzytkownika: ";
+            cin>>uzytkownikDoDodania.haslo;
+            uzytkownikDoDodania.idUzytkownika=1;
+
+            uzytkownicy.push_back(uzytkownikDoDodania);
+
+            cout<<"Nazwa to: "<<uzytkownicy[0].nazwa<<endl;
+            cout<<"Haslo to: "<<uzytkownicy[0].haslo<<endl;
+            cout<<"IdUzytkownika to: "<<uzytkownicy[0].idUzytkownika<<endl;
+            system("pause");
+
         }  else if(wybor=='3') {
             exit(0);
         }
