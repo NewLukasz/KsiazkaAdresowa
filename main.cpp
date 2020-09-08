@@ -87,6 +87,7 @@ void wyswietlanieWszystkichKontaktow(vector <Adresat> kontakty) {
             if(kontakty[i].id!=0) {
                 if(kontakty[i].nazwisko!="usunieto") {
                     cout<<"ID: "<<kontakty[i].id<<endl;
+                    cout<<"IDZalogowanegoUzytkownika przy tworzeniu: "<<kontakty[i].idUzytkownika<<endl;
                     cout<<"Imie: "<<kontakty[i].imie<<endl;
                     cout<<"Nazwisko: "<<kontakty[i].nazwisko<<endl;
                     cout<<"Email: "<<kontakty[i].email<<endl;
@@ -100,14 +101,15 @@ void wyswietlanieWszystkichKontaktow(vector <Adresat> kontakty) {
 
 }
 
-void wyszukajPoImieniu(vector<Adresat> kontakty) {
+void wyszukajPoImieniu(vector<Adresat> kontakty, int idZalogowanegoUzytkownika) {
     if(kontakty.size()>0) {
         string imie;
         int iloscWyswietlen=0;
         cout<<"Wyszukiwane imie: ";
+        cin.sync();
         getline(cin,imie);
         for(int i=0; i<=kontakty.size(); i++) {
-            if(imie==kontakty[i].imie) {
+            if(imie==kontakty[i].imie&&kontakty[i].idUzytkownika==idZalogowanegoUzytkownika) {
                 cout<<"ID: "<<kontakty[i].id<<endl;
                 cout<<"Imie: "<<kontakty[i].imie<<endl;
                 cout<<"Nazwisko: "<<kontakty[i].nazwisko<<endl;
@@ -194,12 +196,11 @@ vector <Adresat> odczytajKontaktyZPliku() {
                 }
             }
 
-
             string idString(liniaZDanymi,0,tablicaIndeksowPodzialow[0]);
             int id = atoi(idString.c_str());
 
             string idZalogowanegoUzytkownikaString (liniaZDanymi,tablicaIndeksowPodzialow[0]+1,tablicaIndeksowPodzialow[1]-tablicaIndeksowPodzialow[0]-1);
-            int idZalogowanegoUzytkownika = atoi(idString.c_str());
+            int idZalogowanegoUzytkownika = atoi(idZalogowanegoUzytkownikaString.c_str());
 
             string imie(liniaZDanymi,tablicaIndeksowPodzialow[1]+1,tablicaIndeksowPodzialow[2]-tablicaIndeksowPodzialow[1]-1);
             string nazwisko(liniaZDanymi,tablicaIndeksowPodzialow[2]+1,tablicaIndeksowPodzialow[3]-tablicaIndeksowPodzialow[2]-1);
@@ -354,7 +355,7 @@ void uruchomMenuUzytkownika(int idZalogowanegoUzytkownika) {
             zapiszDoPlikuKontakty(kontakty);
         } else if(wybor=='2') {
             system("cls");
-            wyszukajPoImieniu(kontakty);
+            wyszukajPoImieniu(kontakty, idZalogowanegoUzytkownika);
         } else if(wybor=='3') {
             system("cls");
             wyszukajPoNazwisku(kontakty);
@@ -376,7 +377,7 @@ void uruchomMenuUzytkownika(int idZalogowanegoUzytkownika) {
 void zapiszDoPlikuUzytkownicy(vector <Uzytkownik> uzytkownicy) {
 
     fstream plik;
-    plik.open("ListaUzytkownikow.txt",ios::out);
+    plik.open("Uzytkownicy.txt",ios::out);
 
     for (int i=0; i<=uzytkownicy.size()-1; i++) {
         plik<<uzytkownicy[i].idUzytkownika<<"|";
@@ -391,7 +392,7 @@ void zapiszDoPlikuUzytkownicy(vector <Uzytkownik> uzytkownicy) {
 vector <Uzytkownik> odczytajUzytkownikowZPliku() {
     vector <Uzytkownik> uzytkownicy;
     fstream plik;
-    plik.open("ListaUzytkownikow.txt",ios::in);
+    plik.open("Uzytkownicy.txt",ios::in);
     if(plik.good()==true) {
         string liniaZDanymi;
         int iloscUzytkownikow=0;
