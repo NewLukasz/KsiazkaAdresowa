@@ -10,7 +10,7 @@ using namespace std;
 
 struct Adresat {
     string imie="",nazwisko="",email="",adres="";
-    int id,numerTelefonu;
+    int id,numerTelefonu, idUzytkownika;
 };
 
 struct Uzytkownik {
@@ -45,7 +45,7 @@ string weryfikacjaPoprawnosciMaila() {
     }
 }
 
-Adresat dodajKontakt(vector<Adresat> kontakty) {
+Adresat dodajKontakt(vector<Adresat> kontakty, int idZalogowanegoUzytkownika) {
 
     cout<<"Dodawanie nowego kontaktu."<<endl;
     Adresat kontaktDoDodania;
@@ -75,6 +75,8 @@ Adresat dodajKontakt(vector<Adresat> kontakty) {
     cout<<"Kontakt zostal dodany prawidlowo"<<endl;
 
     system("pause");
+
+    kontaktDoDodania.idUzytkownika=idZalogowanegoUzytkownika;
 
     return kontaktDoDodania;
 }
@@ -159,18 +161,13 @@ void zapiszDoPlikuKontakty(vector <Adresat> kontakty) {
     plik.open("ListaKontaktow.txt",ios::out);
 
     for (int i=0; i<=kontakty.size()-1; i++) {
-        plik<<kontakty[i].id;
-        plik<<"|";
-        plik<<kontakty[i].imie;
-        plik<<"|";
-        plik<<kontakty[i].nazwisko;
-        plik<<"|";
-        plik<<kontakty[i].email;
-        plik<<"|";
-        plik<<kontakty[i].numerTelefonu;
-        plik<<"|";
-        plik<<kontakty[i].adres;
-        plik<<"|";
+        plik<<kontakty[i].id<<"|";
+        plik<<kontakty[i].idUzytkownika<<"|";
+        plik<<kontakty[i].imie<<"|";
+        plik<<kontakty[i].nazwisko<<"|";
+        plik<<kontakty[i].email<<"|";
+        plik<<kontakty[i].numerTelefonu<<"|";
+        plik<<kontakty[i].adres<<"|";
         plik<<endl;
     }
     plik.close();
@@ -186,7 +183,7 @@ vector <Adresat> odczytajKontaktyZPliku() {
         string liniaZDanymi;
         int iloscKontaktow=0;
         int i=1;
-        int const ILOSC_KOLUMN=6;
+        int const ILOSC_KOLUMN=7;
         int tablicaIndeksowPodzialow[ILOSC_KOLUMN];
         while(getline(plik,liniaZDanymi)) {
             int indeksWykryciaZnakuPodzialu=0;
@@ -200,12 +197,16 @@ vector <Adresat> odczytajKontaktyZPliku() {
 
             string idString(liniaZDanymi,0,tablicaIndeksowPodzialow[0]);
             int id = atoi(idString.c_str());
-            string imie(liniaZDanymi,tablicaIndeksowPodzialow[0]+1,tablicaIndeksowPodzialow[1]-tablicaIndeksowPodzialow[0]-1);
-            string nazwisko(liniaZDanymi,tablicaIndeksowPodzialow[1]+1,tablicaIndeksowPodzialow[2]-tablicaIndeksowPodzialow[1]-1);
-            string email(liniaZDanymi,tablicaIndeksowPodzialow[2]+1,tablicaIndeksowPodzialow[3]-tablicaIndeksowPodzialow[2]-1);
-            string numerString(liniaZDanymi,tablicaIndeksowPodzialow[3]+1,tablicaIndeksowPodzialow[4]-tablicaIndeksowPodzialow[3]-1);
+
+            string idZalogowanegoUzytkownikaString (liniaZDanymi,tablicaIndeksowPodzialow[0]+1,tablicaIndeksowPodzialow[1]-tablicaIndeksowPodzialow[0]-1);
+            int idZalogowanegoUzytkownika = atoi(idString.c_str());
+
+            string imie(liniaZDanymi,tablicaIndeksowPodzialow[1]+1,tablicaIndeksowPodzialow[2]-tablicaIndeksowPodzialow[1]-1);
+            string nazwisko(liniaZDanymi,tablicaIndeksowPodzialow[2]+1,tablicaIndeksowPodzialow[3]-tablicaIndeksowPodzialow[2]-1);
+            string email(liniaZDanymi,tablicaIndeksowPodzialow[3]+1,tablicaIndeksowPodzialow[4]-tablicaIndeksowPodzialow[3]-1);
+            string numerString(liniaZDanymi,tablicaIndeksowPodzialow[4]+1,tablicaIndeksowPodzialow[5]-tablicaIndeksowPodzialow[4]-1);
             int numer=atoi(numerString.c_str());
-            string adres(liniaZDanymi,tablicaIndeksowPodzialow[4]+1,tablicaIndeksowPodzialow[5]-tablicaIndeksowPodzialow[4]-1);
+            string adres(liniaZDanymi,tablicaIndeksowPodzialow[5]+1,tablicaIndeksowPodzialow[6]-tablicaIndeksowPodzialow[5]-1);
 
             Adresat kontaktDoPrzesylaniaDanych;
             kontaktDoPrzesylaniaDanych.id=id;
@@ -214,6 +215,7 @@ vector <Adresat> odczytajKontaktyZPliku() {
             kontaktDoPrzesylaniaDanych.email=email;
             kontaktDoPrzesylaniaDanych.numerTelefonu=numer;
             kontaktDoPrzesylaniaDanych.adres=adres;
+            kontaktDoPrzesylaniaDanych.idUzytkownika=idZalogowanegoUzytkownika;
 
             kontakty.push_back(kontaktDoPrzesylaniaDanych);
             i++;
@@ -255,8 +257,6 @@ void usunAdresata(vector <Adresat> &kontakty) {
         cout<<"Brak kontaktow na Twojej liscie. Rozpocznij dodawanie kontaktow"<<endl;
         system("pause");
     }
-
-
     zapiszDoPlikuKontakty(kontakty);
 }
 
@@ -332,13 +332,13 @@ void modyfikujKontakt(vector <Adresat> &kontakty) {
     zapiszDoPlikuKontakty(kontakty);
 }
 
-void uruchomMenuUzytkownika() {
+void uruchomMenuUzytkownika(int idZalogowanegoUzytkownika) {
     vector <Adresat> kontakty=odczytajKontaktyZPliku();
     int iloscKontakow=kontakty.size();
     char wybor;
     while(1) {
         system("cls");
-
+        cout<<"Zalogowany jest uzytkownik z ID: "<<idZalogowanegoUzytkownika<<endl;
         cout<<"1. Dodaj adresata"<<endl;
         cout<<"2. Wyszukaj po imieniu"<<endl;
         cout<<"3. Wyszukaj po nazwisku"<<endl;
@@ -350,7 +350,7 @@ void uruchomMenuUzytkownika() {
         wybor=_getch();
         if(wybor=='1') {
             system("cls");
-            kontakty.push_back(dodajKontakt(kontakty));
+            kontakty.push_back(dodajKontakt(kontakty,idZalogowanegoUzytkownika));
             zapiszDoPlikuKontakty(kontakty);
         } else if(wybor=='2') {
             system("cls");
@@ -461,7 +461,7 @@ void logowanie() {
             cout<<"Podaj haslo uzytkownika: ";
             cin>>podaneHaslo;
             if(podaneHaslo==uzytkownicy[i].haslo) {
-                uruchomMenuUzytkownika();
+                uruchomMenuUzytkownika(uzytkownicy[i].idUzytkownika);
             } else cout<<"Podano nieprawidlowe haslo"<<endl;
         } else if(i==uzytkownicy.size()&&podaneHaslo=="") cout<<"Uzytkownik o nazwie "<<podanaNazwa<<" nie posiada jeszcze konta"<<endl;
     }
