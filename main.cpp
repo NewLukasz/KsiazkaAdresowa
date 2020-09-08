@@ -240,29 +240,40 @@ void usunAdresata(vector <Adresat> &kontakty, int idZalogowanegoUzytkownika) {
         wyswietlanieWszystkichKontaktow(kontakty, idZalogowanegoUzytkownika);
         cout<<"Podaj numer ID adresata, ktory ma zostac usuniety: ";
         cin>>numerIDAdresataDoUsuniecia;
-        cout<<"Czy jestes pewnie ze chcesz usunac adresata z przypisanym "<<numerIDAdresataDoUsuniecia<<" numerem ID? Jezeli tak wcisnij t"<<endl;
-        char wybor;
-        wybor=_getch();
-        if(wybor=='t') {
-            if(kontakty.size()==1) {
-                cout<<"Nie mozna usunac kontaktu. Dokonaj edycji."<<endl;
-                system("pause");
-            } else {
-                for(int i=0; i<kontakty.size(); i++) {
-                    if(kontakty[i].id==numerIDAdresataDoUsuniecia) {
-                        kontakty.erase(kontakty.begin()+i);
+        if(kontakty.size()==1) {
+            cout<<"Nie mozna usunac kontaktu. Dokonaj edycji."<<endl;
+            system("pause");
+        } else {
+            for(int i=0; i<kontakty.size(); i++) {
+                if(kontakty[i].id==numerIDAdresataDoUsuniecia) {
+                    if(idZalogowanegoUzytkownika==kontakty[i].idUzytkownika) {
+                        cout<<"Czy jestes pewnie ze chcesz usunac adresata z przypisanym "<<numerIDAdresataDoUsuniecia<<" numerem ID? Jezeli tak wcisnij t"<<endl;
+                        char wybor;
+                        wybor=_getch();
+                        if(wybor=='t') {
+                            kontakty.erase(kontakty.begin()+i);
+                            cout<<"Kontakt zostal usuniety"<<endl;
+                            system("pause");
+                            zapiszDoPlikuKontakty(kontakty);
+                            break;
+                        } else cout<<"Kontakt nie zostal usuniety"<<endl;
+                    } else {
+                        cout<<"Brak takiego kontaktu na Twojej liscie"<<endl;
+                        system("pause");
                     }
                 }
-                cout<<"Kontakt zostal usuniety"<<endl;
+                if(i==kontakty.size()-1){
+                    cout<<"Nie ma na liscie kontaktu z numerem: "<<numerIDAdresataDoUsuniecia<<endl;
                 system("pause");
+                break;
+                }
             }
-        } else cout<<"Kontakt nie zostal usuniety."<<endl;
+        }
     } else {
         cout<<"Brak kontaktow na Twojej liscie. Rozpocznij dodawanie kontaktow"<<endl;
-        system("pause");
     }
-    zapiszDoPlikuKontakty(kontakty);
 }
+
 
 void modyfikujKontakt(vector <Adresat> &kontakty, int idZalogowanegoUzytkownika) {
     if(kontakty.size()>0) {
