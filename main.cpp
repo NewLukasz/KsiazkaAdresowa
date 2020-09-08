@@ -5,7 +5,6 @@
 #include <fstream>
 #include <vector>
 
-
 using namespace std;
 
 struct Adresat {
@@ -18,97 +17,165 @@ struct Uzytkownik {
     string nazwa,haslo;
 };
 
-int weryfikacjaPoprawnosciNumeru() {
-    int poprawnyNumerTelefonu=0;
-    while(!(cin>>poprawnyNumerTelefonu)) {
-        cout<<"Podano nieprawidlowy numer.Sprobuj ponownie: ";
-        cin.clear();
-        cin.sync();
-    }
-    return poprawnyNumerTelefonu;
+int weryfikacjaPoprawnosciNumeru();
+
+string weryfikacjaPoprawnosciMaila();
+
+Adresat dodajKontakt(vector<Adresat> kontakty, int idZalogowanegoUzytkownika);
+
+void wyswietlanieWszystkichKontaktow(vector <Adresat> kontakty, int idZalogowanegoUzytkownika);
+
+void wyszukajPoImieniu(vector<Adresat> kontakty, int idZalogowanegoUzytkownika);
+
+void wyszukajPoNazwisku(vector<Adresat> kontakty, int idZalogowanegoUzytkownika);
+
+void zapiszDoPlikuKontakty(vector <Adresat> kontakty);
+
+vector <Adresat> odczytajKontaktyZPliku();
+
+void usunAdresata(vector <Adresat> &kontakty, int idZalogowanegoUzytkownika);
+
+void modyfikujKontakt(vector <Adresat> &kontakty, int idZalogowanegoUzytkownika);
+
+void zapiszDoPlikuUzytkownicy(vector <Uzytkownik> uzytkownicy);
+
+void zmienHaslo(int idZalogowanegoUzytkownika, vector <Uzytkownik> uzytkownicy);
+
+vector <Uzytkownik> odczytajUzytkownikowZPliku();
+
+void uruchomMenuUzytkownika(int idZalogowanegoUzytkownika, vector <Uzytkownik> uzytkownicy);
+
+void logowanie();
+
+void wyswietlMenuLogowania();
+
+void zarejestrujUzytkownika();
+
+
+int main() {
+    wyswietlMenuLogowania();
 }
 
-string weryfikacjaPoprawnosciMaila() {
-    string weryfikowanyAdresMail;
-    getline(cin,weryfikowanyAdresMail);
+void wyswietlMenuLogowania() {
+    char wybor;
     while(1) {
-        for(int i=0; i<weryfikowanyAdresMail.length(); i++) {
-            if(weryfikowanyAdresMail[i]==' ') {
-                cout<<"Podano nieprawidlowy adres e-mail(zawiera spacje). Sprobuj ponownie: ";
-                getline(cin,weryfikowanyAdresMail);
-                i=0;
-                break;
-            } else if(i==weryfikowanyAdresMail.length()-1) {
-                return weryfikowanyAdresMail;
-            }
+        system("cls");
+
+        cout<<"1. Logowanie"<<endl;
+        cout<<"2. Rejestracja"<<endl;
+        cout<<"3. Zamknij program"<<endl;
+
+        wybor=_getch();
+        if(wybor=='1') {
+            logowanie();
+        } else if(wybor=='2') {
+            system("cls");
+            zarejestrujUzytkownika();
+        }  else if(wybor=='3') {
+            exit(0);
+        }
+    }
+}
+
+void logowanie() {
+    string podanaNazwa, podaneHaslo="";
+    vector <Uzytkownik> uzytkownicy=odczytajUzytkownikowZPliku();
+    system("cls");
+    cout<<"Podaj nazwe uzytkownika: ";
+    cin>>podanaNazwa;
+
+    for(int i=0; i<=uzytkownicy.size(); i++) {
+        if(podanaNazwa==uzytkownicy[i].nazwa) {
+            cout<<"Podaj haslo uzytkownika: ";
+            cin>>podaneHaslo;
+            if(podaneHaslo==uzytkownicy[i].haslo) {
+                uruchomMenuUzytkownika(uzytkownicy[i].idUzytkownika,uzytkownicy);
+            } else cout<<"Podano nieprawidlowe haslo"<<endl;
+        } else if(i==uzytkownicy.size()&&podaneHaslo=="") cout<<"Uzytkownik o nazwie "<<podanaNazwa<<" nie posiada jeszcze konta"<<endl;
+    }
+    system("pause");
+}
+
+void zarejestrujUzytkownika() {
+    vector <Uzytkownik> uzytkownicy=odczytajUzytkownikowZPliku();
+    Uzytkownik uzytkownikDoDodania;
+    cout<<"Podaj nazwe uzytkownika: ";
+    cin>>uzytkownikDoDodania.nazwa;
+    cout<<"Podaj haslo uzytkownika: ";
+    cin>>uzytkownikDoDodania.haslo;
+    uzytkownikDoDodania.idUzytkownika=uzytkownicy.size()+1;
+    uzytkownicy.push_back(uzytkownikDoDodania);
+    cout<<"Uzytkownik zostal zarejestrowany."<<endl;
+    cout<<"Id nadane uzytkownikowi "<<uzytkownikDoDodania.nazwa<< " to: "<<uzytkownicy[uzytkownicy.size()-1].idUzytkownika<<endl;
+    zapiszDoPlikuUzytkownicy(uzytkownicy);
+}
+
+void uruchomMenuUzytkownika(int idZalogowanegoUzytkownika, vector <Uzytkownik> uzytkownicy) {
+    vector <Adresat> kontakty=odczytajKontaktyZPliku();
+    int iloscKontakow=kontakty.size();
+    char wybor;
+    while(1) {
+        system("cls");
+        cout<<"1. Dodaj adresata"<<endl;
+        cout<<"2. Wyszukaj po imieniu"<<endl;
+        cout<<"3. Wyszukaj po nazwisku"<<endl;
+        cout<<"4. Wyswietl liste wszystkich kontaktow"<<endl;
+        cout<<"5. Usun adresata"<<endl;
+        cout<<"6. Edytuj adresata"<<endl;
+        cout<<"7. Zmien haslo"<<endl;
+        cout<<"9. Wyloguj"<<endl;
+
+        wybor=_getch();
+        if(wybor=='1') {
+            system("cls");
+            kontakty.push_back(dodajKontakt(kontakty,idZalogowanegoUzytkownika));
+            zapiszDoPlikuKontakty(kontakty);
+        } else if(wybor=='2') {
+            system("cls");
+            wyszukajPoImieniu(kontakty, idZalogowanegoUzytkownika);
+        } else if(wybor=='3') {
+            system("cls");
+            wyszukajPoNazwisku(kontakty, idZalogowanegoUzytkownika);
+        } else if(wybor=='4') {
+            system("cls");
+            wyswietlanieWszystkichKontaktow(kontakty, idZalogowanegoUzytkownika);
+            system("pause");
+        } else if(wybor=='5') {
+            usunAdresata(kontakty, idZalogowanegoUzytkownika);
+        } else if(wybor=='6') {
+            modyfikujKontakt(kontakty, idZalogowanegoUzytkownika);
+        } else if(wybor=='7') {
+            zmienHaslo(idZalogowanegoUzytkownika, uzytkownicy);
+        } else if(wybor=='9') {
+            wyswietlMenuLogowania();
+            zapiszDoPlikuKontakty(kontakty);
         }
     }
 }
 
 Adresat dodajKontakt(vector<Adresat> kontakty, int idZalogowanegoUzytkownika) {
-
     cout<<"Dodawanie nowego kontaktu."<<endl;
     Adresat kontaktDoDodania;
     cin.sync();
     cout<<"Podaj imie: ";
     getline(cin,kontaktDoDodania.imie);
-
-    //cin.ignore();
     cout<<"Podaj nazwisko: ";
     getline(cin,kontaktDoDodania.nazwisko);
-
     cout<<"Podaj email: ";
     cin.ignore();
     kontaktDoDodania.email=weryfikacjaPoprawnosciMaila();
-
     cout<<"Podaj numer telefonu: ";
     kontaktDoDodania.numerTelefonu=weryfikacjaPoprawnosciNumeru();
-
     cout<<"Podaj adres: ";
     cin.ignore();
     getline(cin,kontaktDoDodania.adres);
-
     if(kontakty.size()>0) {
         kontaktDoDodania.id=kontakty[kontakty.size()-1].id+1;
     } else kontaktDoDodania.id=1;
-
     cout<<"Kontakt zostal dodany prawidlowo"<<endl;
-
     system("pause");
-
     kontaktDoDodania.idUzytkownika=idZalogowanegoUzytkownika;
-
     return kontaktDoDodania;
-}
-
-void wyswietlanieWszystkichKontaktow(vector <Adresat> kontakty, int idZalogowanegoUzytkownika) {
-
-    int iloscKontaktowDlaDanegoUzytkownika=0;
-    for(int i=0; i<kontakty.size(); i++) {
-        if(kontakty[i].idUzytkownika==idZalogowanegoUzytkownika) {
-            iloscKontaktowDlaDanegoUzytkownika++;
-        }
-    }
-    if(iloscKontaktowDlaDanegoUzytkownika>0) {
-        for (int i=0; i<=kontakty.size()-1; i++) {
-            if(kontakty[i].id!=0) {
-                if(kontakty[i].nazwisko!="usunieto") {
-                    if(kontakty[i].idUzytkownika==idZalogowanegoUzytkownika) {
-                        cout<<"ID: "<<kontakty[i].id<<endl;
-                        cout<<"IDZalogowanegoUzytkownika przy tworzeniu: "<<kontakty[i].idUzytkownika<<endl;
-                        cout<<"Imie: "<<kontakty[i].imie<<endl;
-                        cout<<"Nazwisko: "<<kontakty[i].nazwisko<<endl;
-                        cout<<"Email: "<<kontakty[i].email<<endl;
-                        cout<<"Numer telefonu: "<<kontakty[i].numerTelefonu<<endl;
-                        cout<<"Adres: "<<kontakty[i].adres<<endl;
-                        cout<<"_________________________________________________"<<endl;
-                    }
-
-                }
-            }
-        }
-    } else cout<<"Brak kontaktow do wyswietlenia."<<endl;
-
 }
 
 void wyszukajPoImieniu(vector<Adresat> kontakty, int idZalogowanegoUzytkownika) {
@@ -135,7 +202,6 @@ void wyszukajPoImieniu(vector<Adresat> kontakty, int idZalogowanegoUzytkownika) 
             cout<<"Brak kontaktow dla slowa kluczowego: "<<imie<<endl;
         }
     } else cout<<"Brak kontaktow do wyswietlenia, rozpocznij dodawanie"<<endl;
-
     system("pause");
 }
 
@@ -162,82 +228,34 @@ void wyszukajPoNazwisku(vector<Adresat> kontakty, int idZalogowanegoUzytkownika)
             cout<<"Brak kontaktow dla slowa kluczowego: "<<nazwisko<<endl;
         }
     } else cout<<"Brak kontaktow do wyswietlenia, rozpocznij dodawanie"<<endl;
-
     system("pause");
 }
 
-
-void zapiszDoPlikuKontakty(vector <Adresat> kontakty) {
-
-    fstream plik;
-    plik.open("ListaKontaktow.txt",ios::out);
-
-    for (int i=0; i<=kontakty.size()-1; i++) {
-        plik<<kontakty[i].id<<"|";
-        plik<<kontakty[i].idUzytkownika<<"|";
-        plik<<kontakty[i].imie<<"|";
-        plik<<kontakty[i].nazwisko<<"|";
-        plik<<kontakty[i].email<<"|";
-        plik<<kontakty[i].numerTelefonu<<"|";
-        plik<<kontakty[i].adres<<"|";
-        plik<<endl;
+void wyswietlanieWszystkichKontaktow(vector <Adresat> kontakty, int idZalogowanegoUzytkownika) {
+    int iloscKontaktowDlaDanegoUzytkownika=0;
+    for(int i=0; i<kontakty.size(); i++) {
+        if(kontakty[i].idUzytkownika==idZalogowanegoUzytkownika) {
+            iloscKontaktowDlaDanegoUzytkownika++;
+        }
     }
-    plik.close();
-    cout<<"\nPlik z lista kontaktow zostal pomyslnie zaktualizowany.\n";
-    system("pause");
-}
+    if(iloscKontaktowDlaDanegoUzytkownika>0) {
+        for (int i=0; i<=kontakty.size()-1; i++) {
+            if(kontakty[i].id!=0) {
+                if(kontakty[i].nazwisko!="usunieto") {
+                    if(kontakty[i].idUzytkownika==idZalogowanegoUzytkownika) {
+                        cout<<"ID: "<<kontakty[i].id<<endl;
+                        cout<<"Imie: "<<kontakty[i].imie<<endl;
+                        cout<<"Nazwisko: "<<kontakty[i].nazwisko<<endl;
+                        cout<<"Email: "<<kontakty[i].email<<endl;
+                        cout<<"Numer telefonu: "<<kontakty[i].numerTelefonu<<endl;
+                        cout<<"Adres: "<<kontakty[i].adres<<endl;
+                        cout<<"_________________________________________________"<<endl;
+                    }
 
-vector <Adresat> odczytajKontaktyZPliku() {
-    vector <Adresat> kontakty;
-    fstream plik;
-    plik.open("ListaKontaktow.txt",ios::in);
-    if(plik.good()==true) {
-        string liniaZDanymi;
-        int iloscKontaktow=0;
-        int i=1;
-        int const ILOSC_KOLUMN=7;
-        int tablicaIndeksowPodzialow[ILOSC_KOLUMN];
-        while(getline(plik,liniaZDanymi)) {
-            int indeksWykryciaZnakuPodzialu=0;
-            for(int k=0; k<liniaZDanymi.length(); k++) {
-                if(liniaZDanymi[k]=='|') {
-                    tablicaIndeksowPodzialow[indeksWykryciaZnakuPodzialu]=k;
-                    indeksWykryciaZnakuPodzialu++;
                 }
             }
-
-            string idString(liniaZDanymi,0,tablicaIndeksowPodzialow[0]);
-            int id = atoi(idString.c_str());
-
-            string idZalogowanegoUzytkownikaString (liniaZDanymi,tablicaIndeksowPodzialow[0]+1,tablicaIndeksowPodzialow[1]-tablicaIndeksowPodzialow[0]-1);
-            int idZalogowanegoUzytkownika = atoi(idZalogowanegoUzytkownikaString.c_str());
-
-            string imie(liniaZDanymi,tablicaIndeksowPodzialow[1]+1,tablicaIndeksowPodzialow[2]-tablicaIndeksowPodzialow[1]-1);
-            string nazwisko(liniaZDanymi,tablicaIndeksowPodzialow[2]+1,tablicaIndeksowPodzialow[3]-tablicaIndeksowPodzialow[2]-1);
-            string email(liniaZDanymi,tablicaIndeksowPodzialow[3]+1,tablicaIndeksowPodzialow[4]-tablicaIndeksowPodzialow[3]-1);
-            string numerString(liniaZDanymi,tablicaIndeksowPodzialow[4]+1,tablicaIndeksowPodzialow[5]-tablicaIndeksowPodzialow[4]-1);
-            int numer=atoi(numerString.c_str());
-            string adres(liniaZDanymi,tablicaIndeksowPodzialow[5]+1,tablicaIndeksowPodzialow[6]-tablicaIndeksowPodzialow[5]-1);
-
-            Adresat kontaktDoPrzesylaniaDanych;
-            kontaktDoPrzesylaniaDanych.id=id;
-            kontaktDoPrzesylaniaDanych.imie=imie;
-            kontaktDoPrzesylaniaDanych.nazwisko=nazwisko;
-            kontaktDoPrzesylaniaDanych.email=email;
-            kontaktDoPrzesylaniaDanych.numerTelefonu=numer;
-            kontaktDoPrzesylaniaDanych.adres=adres;
-            kontaktDoPrzesylaniaDanych.idUzytkownika=idZalogowanegoUzytkownika;
-
-            kontakty.push_back(kontaktDoPrzesylaniaDanych);
-            i++;
         }
-        plik.close();
-        return kontakty;
-    } else {
-        cout<<"Brak kontaktow - rozpocznij dodawanie"<<endl;
-        system("pause");
-        return kontakty;
-    }
+    } else cout<<"Brak kontaktow do wyswietlenia."<<endl;
 }
 
 void usunAdresata(vector <Adresat> &kontakty, int idZalogowanegoUzytkownika) {
@@ -280,7 +298,6 @@ void usunAdresata(vector <Adresat> &kontakty, int idZalogowanegoUzytkownika) {
         cout<<"Brak kontaktow na Twojej liscie. Rozpocznij dodawanie kontaktow"<<endl;
     }
 }
-
 
 void modyfikujKontakt(vector <Adresat> &kontakty, int idZalogowanegoUzytkownika) {
     if(kontakty.size()>0) {
@@ -355,21 +372,6 @@ void modyfikujKontakt(vector <Adresat> &kontakty, int idZalogowanegoUzytkownika)
     zapiszDoPlikuKontakty(kontakty);
 }
 
-void zapiszDoPlikuUzytkownicy(vector <Uzytkownik> uzytkownicy) {
-
-    fstream plik;
-    plik.open("Uzytkownicy.txt",ios::out);
-
-    for (int i=0; i<=uzytkownicy.size()-1; i++) {
-        plik<<uzytkownicy[i].idUzytkownika<<"|";
-        plik<<uzytkownicy[i].nazwa<<"|";
-        plik<<uzytkownicy[i].haslo<<"|"<<endl;
-    }
-    plik.close();
-    cout<<"\nPlik z lista uzytkownikow zostal pomyslnie zaktualizowany.\n";
-    system("pause");
-}
-
 void zmienHaslo(int idZalogowanegoUzytkownika, vector <Uzytkownik> uzytkownicy) {
     for(int i=0; i<uzytkownicy.size(); i++) {
         if(idZalogowanegoUzytkownika==uzytkownicy[i].idUzytkownika) {
@@ -385,47 +387,87 @@ void zmienHaslo(int idZalogowanegoUzytkownika, vector <Uzytkownik> uzytkownicy) 
     }
 }
 
-void uruchomMenuUzytkownika(int idZalogowanegoUzytkownika, vector <Uzytkownik> uzytkownicy) {
-    vector <Adresat> kontakty=odczytajKontaktyZPliku();
-    int iloscKontakow=kontakty.size();
-    char wybor;
-    while(1) {
-        system("cls");
-        cout<<"1. Dodaj adresata"<<endl;
-        cout<<"2. Wyszukaj po imieniu"<<endl;
-        cout<<"3. Wyszukaj po nazwisku"<<endl;
-        cout<<"4. Wyswietl liste wszystkich kontaktow"<<endl;
-        cout<<"5. Usun adresata"<<endl;
-        cout<<"6. Edytuj adresata"<<endl;
-        cout<<"7. Zmien haslo"<<endl;
-        cout<<"9. Zakoncz"<<endl;
+void zapiszDoPlikuKontakty(vector <Adresat> kontakty) {
 
-        wybor=_getch();
-        if(wybor=='1') {
-            system("cls");
-            kontakty.push_back(dodajKontakt(kontakty,idZalogowanegoUzytkownika));
-            zapiszDoPlikuKontakty(kontakty);
-        } else if(wybor=='2') {
-            system("cls");
-            wyszukajPoImieniu(kontakty, idZalogowanegoUzytkownika);
-        } else if(wybor=='3') {
-            system("cls");
-            wyszukajPoNazwisku(kontakty, idZalogowanegoUzytkownika);
-        } else if(wybor=='4') {
-            system("cls");
-            wyswietlanieWszystkichKontaktow(kontakty, idZalogowanegoUzytkownika);
-            system("pause");
-        } else if(wybor=='5') {
-            usunAdresata(kontakty, idZalogowanegoUzytkownika);
-        } else if(wybor=='6') {
-            modyfikujKontakt(kontakty, idZalogowanegoUzytkownika);
-        } else if(wybor=='7') {
-            zmienHaslo(idZalogowanegoUzytkownika, uzytkownicy);
-        } else if(wybor=='9') {
-            zapiszDoPlikuKontakty(kontakty);
-            exit(0);
-        }
+    fstream plik;
+    plik.open("ListaKontaktow.txt",ios::out);
+
+    for (int i=0; i<=kontakty.size()-1; i++) {
+        plik<<kontakty[i].id<<"|";
+        plik<<kontakty[i].idUzytkownika<<"|";
+        plik<<kontakty[i].imie<<"|";
+        plik<<kontakty[i].nazwisko<<"|";
+        plik<<kontakty[i].email<<"|";
+        plik<<kontakty[i].numerTelefonu<<"|";
+        plik<<kontakty[i].adres<<"|";
+        plik<<endl;
     }
+    plik.close();
+    cout<<"\nPlik z lista kontaktow zostal pomyslnie zaktualizowany.\n";
+    system("pause");
+}
+
+vector <Adresat> odczytajKontaktyZPliku() {
+    vector <Adresat> kontakty;
+    fstream plik;
+    plik.open("ListaKontaktow.txt",ios::in);
+    if(plik.good()==true) {
+        string liniaZDanymi;
+        int iloscKontaktow=0;
+        int i=1;
+        int const ILOSC_KOLUMN=7;
+        int tablicaIndeksowPodzialow[ILOSC_KOLUMN];
+        while(getline(plik,liniaZDanymi)) {
+            int indeksWykryciaZnakuPodzialu=0;
+            for(int k=0; k<liniaZDanymi.length(); k++) {
+                if(liniaZDanymi[k]=='|') {
+                    tablicaIndeksowPodzialow[indeksWykryciaZnakuPodzialu]=k;
+                    indeksWykryciaZnakuPodzialu++;
+                }
+            }
+            string idString(liniaZDanymi,0,tablicaIndeksowPodzialow[0]);
+            int id = atoi(idString.c_str());
+            string idZalogowanegoUzytkownikaString (liniaZDanymi,tablicaIndeksowPodzialow[0]+1,tablicaIndeksowPodzialow[1]-tablicaIndeksowPodzialow[0]-1);
+            int idZalogowanegoUzytkownika = atoi(idZalogowanegoUzytkownikaString.c_str());
+            string imie(liniaZDanymi,tablicaIndeksowPodzialow[1]+1,tablicaIndeksowPodzialow[2]-tablicaIndeksowPodzialow[1]-1);
+            string nazwisko(liniaZDanymi,tablicaIndeksowPodzialow[2]+1,tablicaIndeksowPodzialow[3]-tablicaIndeksowPodzialow[2]-1);
+            string email(liniaZDanymi,tablicaIndeksowPodzialow[3]+1,tablicaIndeksowPodzialow[4]-tablicaIndeksowPodzialow[3]-1);
+            string numerString(liniaZDanymi,tablicaIndeksowPodzialow[4]+1,tablicaIndeksowPodzialow[5]-tablicaIndeksowPodzialow[4]-1);
+            int numer=atoi(numerString.c_str());
+            string adres(liniaZDanymi,tablicaIndeksowPodzialow[5]+1,tablicaIndeksowPodzialow[6]-tablicaIndeksowPodzialow[5]-1);
+            Adresat kontaktDoPrzesylaniaDanych;
+            kontaktDoPrzesylaniaDanych.id=id;
+            kontaktDoPrzesylaniaDanych.imie=imie;
+            kontaktDoPrzesylaniaDanych.nazwisko=nazwisko;
+            kontaktDoPrzesylaniaDanych.email=email;
+            kontaktDoPrzesylaniaDanych.numerTelefonu=numer;
+            kontaktDoPrzesylaniaDanych.adres=adres;
+            kontaktDoPrzesylaniaDanych.idUzytkownika=idZalogowanegoUzytkownika;
+            kontakty.push_back(kontaktDoPrzesylaniaDanych);
+            i++;
+        }
+        plik.close();
+        return kontakty;
+    } else {
+        cout<<"Brak kontaktow - rozpocznij dodawanie"<<endl;
+        system("pause");
+        return kontakty;
+    }
+}
+
+void zapiszDoPlikuUzytkownicy(vector <Uzytkownik> uzytkownicy) {
+
+    fstream plik;
+    plik.open("Uzytkownicy.txt",ios::out);
+
+    for (int i=0; i<=uzytkownicy.size()-1; i++) {
+        plik<<uzytkownicy[i].idUzytkownika<<"|";
+        plik<<uzytkownicy[i].nazwa<<"|";
+        plik<<uzytkownicy[i].haslo<<"|"<<endl;
+    }
+    plik.close();
+    cout<<"\nPlik z lista uzytkownikow zostal pomyslnie zaktualizowany.\n";
+    system("pause");
 }
 
 vector <Uzytkownik> odczytajUzytkownikowZPliku() {
@@ -465,57 +507,50 @@ vector <Uzytkownik> odczytajUzytkownikowZPliku() {
     }
 }
 
-void zarejestrujUzytkownika() {
-    vector <Uzytkownik> uzytkownicy=odczytajUzytkownikowZPliku();
-    Uzytkownik uzytkownikDoDodania;
-    cout<<"Podaj nazwe uzytkownika: ";
-    cin>>uzytkownikDoDodania.nazwa;
-    cout<<"Podaj haslo uzytkownika: ";
-    cin>>uzytkownikDoDodania.haslo;
-    uzytkownikDoDodania.idUzytkownika=uzytkownicy.size()+1;
-    uzytkownicy.push_back(uzytkownikDoDodania);
-    cout<<"Uzytkownik zostal zarejestrowany."<<endl;
-    cout<<"Id nadane uzytkownikowi "<<uzytkownikDoDodania.nazwa<< " to: "<<uzytkownicy[uzytkownicy.size()-1].idUzytkownika<<endl;
-    zapiszDoPlikuUzytkownicy(uzytkownicy);
-}
-
-void logowanie() {
-    string podanaNazwa, podaneHaslo="";
-    vector <Uzytkownik> uzytkownicy=odczytajUzytkownikowZPliku();
-    system("cls");
-    cout<<"Podaj nazwe uzytkownika: ";
-    cin>>podanaNazwa;
-
-    for(int i=0; i<=uzytkownicy.size(); i++) {
-        if(podanaNazwa==uzytkownicy[i].nazwa) {
-            cout<<"Podaj haslo uzytkownika: ";
-            cin>>podaneHaslo;
-            if(podaneHaslo==uzytkownicy[i].haslo) {
-                uruchomMenuUzytkownika(uzytkownicy[i].idUzytkownika,uzytkownicy);
-            } else cout<<"Podano nieprawidlowe haslo"<<endl;
-        } else if(i==uzytkownicy.size()&&podaneHaslo=="") cout<<"Uzytkownik o nazwie "<<podanaNazwa<<" nie posiada jeszcze konta"<<endl;
+int weryfikacjaPoprawnosciNumeru() {
+    int poprawnyNumerTelefonu=0;
+    while(!(cin>>poprawnyNumerTelefonu)) {
+        cout<<"Podano nieprawidlowy numer.Sprobuj ponownie: ";
+        cin.clear();
+        cin.sync();
     }
-    system("pause");
+    return poprawnyNumerTelefonu;
 }
 
-int main() {
-
-    char wybor;
+string weryfikacjaPoprawnosciMaila() {
+    string weryfikowanyAdresMail;
+    getline(cin,weryfikowanyAdresMail);
     while(1) {
-        system("cls");
-
-        cout<<"1. Logowanie"<<endl;
-        cout<<"2. Rejestracja"<<endl;
-        cout<<"3. Zamknij program"<<endl;
-
-        wybor=_getch();
-        if(wybor=='1') {
-            logowanie();
-        } else if(wybor=='2') {
-            system("cls");
-            zarejestrujUzytkownika();
-        }  else if(wybor=='3') {
-            exit(0);
+        for(int i=0; i<weryfikowanyAdresMail.length(); i++) {
+            if(weryfikowanyAdresMail[i]==' ') {
+                cout<<"Podano nieprawidlowy adres e-mail(zawiera spacje). Sprobuj ponownie: ";
+                getline(cin,weryfikowanyAdresMail);
+                i=0;
+                break;
+            } else if(i==weryfikowanyAdresMail.length()-1) {
+                return weryfikowanyAdresMail;
+            }
         }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
