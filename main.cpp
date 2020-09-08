@@ -31,8 +31,6 @@ void wyszukajPoNazwisku(vector<Adresat> kontakty, int idZalogowanegoUzytkownika)
 
 void zapiszDoPlikuKontakty(vector <Adresat> kontakty);
 
-vector <Adresat> odczytajKontaktyZPliku();
-
 void usunAdresata(vector <Adresat> &kontakty, int idZalogowanegoUzytkownika);
 
 void modyfikujKontakt(vector <Adresat> &kontakty, int idZalogowanegoUzytkownika);
@@ -42,6 +40,8 @@ void zapiszDoPlikuUzytkownicy(vector <Uzytkownik> uzytkownicy);
 void zmienHaslo(int idZalogowanegoUzytkownika, vector <Uzytkownik> uzytkownicy);
 
 vector <Uzytkownik> odczytajUzytkownikowZPliku();
+
+vector <Adresat> odczytajKontaktyZPliku(int idAktualnieZalogowanegoUzytkownika);
 
 void uruchomMenuUzytkownika(int idZalogowanegoUzytkownika, vector <Uzytkownik> uzytkownicy);
 
@@ -111,7 +111,7 @@ void zarejestrujUzytkownika() {
 }
 
 void uruchomMenuUzytkownika(int idZalogowanegoUzytkownika, vector <Uzytkownik> uzytkownicy) {
-    vector <Adresat> kontakty=odczytajKontaktyZPliku();
+    vector <Adresat> kontakty=odczytajKontaktyZPliku(idZalogowanegoUzytkownika);
     int iloscKontakow=kontakty.size();
     char wybor;
     while(1) {
@@ -407,7 +407,7 @@ void zapiszDoPlikuKontakty(vector <Adresat> kontakty) {
     system("pause");
 }
 
-vector <Adresat> odczytajKontaktyZPliku() {
+vector <Adresat> odczytajKontaktyZPliku(int idAktualnieZalogowanegoUzytkownika) {
     vector <Adresat> kontakty;
     fstream plik;
     plik.open("ListaKontaktow.txt",ios::in);
@@ -425,10 +425,32 @@ vector <Adresat> odczytajKontaktyZPliku() {
                     indeksWykryciaZnakuPodzialu++;
                 }
             }
-            string idString(liniaZDanymi,0,tablicaIndeksowPodzialow[0]);
-            int id = atoi(idString.c_str());
+
             string idZalogowanegoUzytkownikaString (liniaZDanymi,tablicaIndeksowPodzialow[0]+1,tablicaIndeksowPodzialow[1]-tablicaIndeksowPodzialow[0]-1);
             int idZalogowanegoUzytkownika = atoi(idZalogowanegoUzytkownikaString.c_str());
+            if(idAktualnieZalogowanegoUzytkownika==idZalogowanegoUzytkownika) {
+                string idString(liniaZDanymi,0,tablicaIndeksowPodzialow[0]);
+                int id = atoi(idString.c_str());
+                string imie(liniaZDanymi,tablicaIndeksowPodzialow[1]+1,tablicaIndeksowPodzialow[2]-tablicaIndeksowPodzialow[1]-1);
+                string nazwisko(liniaZDanymi,tablicaIndeksowPodzialow[2]+1,tablicaIndeksowPodzialow[3]-tablicaIndeksowPodzialow[2]-1);
+                string email(liniaZDanymi,tablicaIndeksowPodzialow[3]+1,tablicaIndeksowPodzialow[4]-tablicaIndeksowPodzialow[3]-1);
+                string numerString(liniaZDanymi,tablicaIndeksowPodzialow[4]+1,tablicaIndeksowPodzialow[5]-tablicaIndeksowPodzialow[4]-1);
+                int numer=atoi(numerString.c_str());
+                string adres(liniaZDanymi,tablicaIndeksowPodzialow[5]+1,tablicaIndeksowPodzialow[6]-tablicaIndeksowPodzialow[5]-1);
+                Adresat kontaktDoPrzesylaniaDanych;
+                kontaktDoPrzesylaniaDanych.id=id;
+                kontaktDoPrzesylaniaDanych.imie=imie;
+                kontaktDoPrzesylaniaDanych.nazwisko=nazwisko;
+                kontaktDoPrzesylaniaDanych.email=email;
+                kontaktDoPrzesylaniaDanych.numerTelefonu=numer;
+                kontaktDoPrzesylaniaDanych.adres=adres;
+                kontaktDoPrzesylaniaDanych.idUzytkownika=idZalogowanegoUzytkownika;
+                kontakty.push_back(kontaktDoPrzesylaniaDanych);
+                i++;
+            }
+            /*
+            string idString(liniaZDanymi,0,tablicaIndeksowPodzialow[0]);
+            int id = atoi(idString.c_str());
             string imie(liniaZDanymi,tablicaIndeksowPodzialow[1]+1,tablicaIndeksowPodzialow[2]-tablicaIndeksowPodzialow[1]-1);
             string nazwisko(liniaZDanymi,tablicaIndeksowPodzialow[2]+1,tablicaIndeksowPodzialow[3]-tablicaIndeksowPodzialow[2]-1);
             string email(liniaZDanymi,tablicaIndeksowPodzialow[3]+1,tablicaIndeksowPodzialow[4]-tablicaIndeksowPodzialow[3]-1);
@@ -444,7 +466,7 @@ vector <Adresat> odczytajKontaktyZPliku() {
             kontaktDoPrzesylaniaDanych.adres=adres;
             kontaktDoPrzesylaniaDanych.idUzytkownika=idZalogowanegoUzytkownika;
             kontakty.push_back(kontaktDoPrzesylaniaDanych);
-            i++;
+            i++;*/
         }
         plik.close();
         return kontakty;
