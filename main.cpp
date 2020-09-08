@@ -136,7 +136,7 @@ void wyszukajPoNazwisku(vector<Adresat> kontakty) {
         cout<<"Wyszukiwane nazwisko: ";
         getline(cin,nazwisko);
         for(int i=0; i<=kontakty.size(); i++) {
-            if(nazwisko==kontakty[i].nazwisko) {
+            if(nazwisko==kontakty[i].nazwisko&&kontakty[i].idUzytkownika==idZalogowanegoUzytkownika) {
                 cout<<"ID: "<<kontakty[i].id<<endl;
                 cout<<"Imie: "<<kontakty[i].nazwisko<<endl;
                 cout<<"Nazwisko: "<<kontakty[i].nazwisko<<endl;
