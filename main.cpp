@@ -262,10 +262,10 @@ void usunAdresata(vector <Adresat> &kontakty, int idZalogowanegoUzytkownika) {
                         system("pause");
                     }
                 }
-                if(i==kontakty.size()-1){
+                if(i==kontakty.size()-1) {
                     cout<<"Nie ma na liscie kontaktu z numerem: "<<numerIDAdresataDoUsuniecia<<endl;
-                system("pause");
-                break;
+                    system("pause");
+                    break;
                 }
             }
         }
@@ -282,17 +282,16 @@ void modyfikujKontakt(vector <Adresat> &kontakty, int idZalogowanegoUzytkownika)
         wyswietlanieWszystkichKontaktow(kontakty, idZalogowanegoUzytkownika);
         cout<<"Podaj ID kontaktu do modyfikacji: ";
         cin>>numerIDDoModyfikacji;
-        system("cls");
-        cout<<"ID modyfikowanego kontaktu to: "<<numerIDDoModyfikacji<<endl;
-        cout<<"1. Zmien imie "<<endl;
-        cout<<"2. Zmien nazwisko "<<endl;
-        cout<<"3. Zmien numer telefonu "<<endl;
-        cout<<"4. Zmien e-mail "<<endl;
-        cout<<"5. Zmien adres "<<endl;
-        cout<<"6. Powrot do menu"<<endl;
-
         for(int i=0; i<kontakty.size(); i++) {
-            if(numerIDDoModyfikacji==kontakty[i].id) {
+            if(numerIDDoModyfikacji==kontakty[i].id&&kontakty[i].idUzytkownika==idZalogowanegoUzytkownika) {
+                system("cls");
+                cout<<"ID modyfikowanego kontaktu to: "<<numerIDDoModyfikacji<<endl;
+                cout<<"1. Zmien imie "<<endl;
+                cout<<"2. Zmien nazwisko "<<endl;
+                cout<<"3. Zmien numer telefonu "<<endl;
+                cout<<"4. Zmien e-mail "<<endl;
+                cout<<"5. Zmien adres "<<endl;
+                cout<<"6. Powrot do menu"<<endl;
                 char wybor;
                 wybor=_getch();
                 if(wybor=='1') {
@@ -337,9 +336,11 @@ void modyfikujKontakt(vector <Adresat> &kontakty, int idZalogowanegoUzytkownika)
                     cout<<"Dane zostaly zaktualizowane"<<endl;
                     system("pause");
                 }
+            } else if(kontakty[i].idUzytkownika!=idZalogowanegoUzytkownika) {
+                cout<<"Nie ma mozliwosci modyfikacji kontaktu"<<endl;
+                break;
             }
         }
-
     } else {
         cout<<"Brak kontaktow do modyfikacji. Rozpocznij dodawanie kontaktow."<<endl;
         system("pause");
