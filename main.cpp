@@ -82,7 +82,14 @@ Adresat dodajKontakt(vector<Adresat> kontakty, int idZalogowanegoUzytkownika) {
 }
 
 void wyswietlanieWszystkichKontaktow(vector <Adresat> kontakty, int idZalogowanegoUzytkownika) {
-    if(kontakty.size()>0) {
+
+    int iloscKontaktowDlaDanegoUzytkownika=0;
+    for(int i=0;i<kontakty.size();i++){
+        if(kontakty[i].idUzytkownika==idZalogowanegoUzytkownika){
+            iloscKontaktowDlaDanegoUzytkownika++;
+        }
+    }
+    if(iloscKontaktowDlaDanegoUzytkownika>0) {
         for (int i=0; i<=kontakty.size()-1; i++) {
             if(kontakty[i].id!=0) {
                 if(kontakty[i].nazwisko!="usunieto") {
