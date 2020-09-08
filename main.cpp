@@ -84,8 +84,8 @@ Adresat dodajKontakt(vector<Adresat> kontakty, int idZalogowanegoUzytkownika) {
 void wyswietlanieWszystkichKontaktow(vector <Adresat> kontakty, int idZalogowanegoUzytkownika) {
 
     int iloscKontaktowDlaDanegoUzytkownika=0;
-    for(int i=0;i<kontakty.size();i++){
-        if(kontakty[i].idUzytkownika==idZalogowanegoUzytkownika){
+    for(int i=0; i<kontakty.size(); i++) {
+        if(kontakty[i].idUzytkownika==idZalogowanegoUzytkownika) {
             iloscKontaktowDlaDanegoUzytkownika++;
         }
     }
@@ -355,19 +355,49 @@ void modyfikujKontakt(vector <Adresat> &kontakty, int idZalogowanegoUzytkownika)
     zapiszDoPlikuKontakty(kontakty);
 }
 
-void uruchomMenuUzytkownika(int idZalogowanegoUzytkownika) {
+void zapiszDoPlikuUzytkownicy(vector <Uzytkownik> uzytkownicy) {
+
+    fstream plik;
+    plik.open("Uzytkownicy.txt",ios::out);
+
+    for (int i=0; i<=uzytkownicy.size()-1; i++) {
+        plik<<uzytkownicy[i].idUzytkownika<<"|";
+        plik<<uzytkownicy[i].nazwa<<"|";
+        plik<<uzytkownicy[i].haslo<<"|"<<endl;
+    }
+    plik.close();
+    cout<<"\nPlik z lista uzytkownikow zostal pomyslnie zaktualizowany.\n";
+    system("pause");
+}
+
+void zmienHaslo(int idZalogowanegoUzytkownika, vector <Uzytkownik> uzytkownicy) {
+    for(int i=0; i<uzytkownicy.size(); i++) {
+        if(idZalogowanegoUzytkownika==uzytkownicy[i].idUzytkownika) {
+            system("cls");
+            cout<<"Podaj nowe haslo: ";
+            string noweHaslo;
+            cin>>noweHaslo;
+            uzytkownicy[i].haslo=noweHaslo;
+            cout<<"Haslo zostalo zmienione"<<endl;
+            zapiszDoPlikuUzytkownicy(uzytkownicy);
+            break;
+        }
+    }
+}
+
+void uruchomMenuUzytkownika(int idZalogowanegoUzytkownika, vector <Uzytkownik> uzytkownicy) {
     vector <Adresat> kontakty=odczytajKontaktyZPliku();
     int iloscKontakow=kontakty.size();
     char wybor;
     while(1) {
         system("cls");
-        cout<<"Zalogowany jest uzytkownik z ID: "<<idZalogowanegoUzytkownika<<endl;
         cout<<"1. Dodaj adresata"<<endl;
         cout<<"2. Wyszukaj po imieniu"<<endl;
         cout<<"3. Wyszukaj po nazwisku"<<endl;
         cout<<"4. Wyswietl liste wszystkich kontaktow"<<endl;
         cout<<"5. Usun adresata"<<endl;
         cout<<"6. Edytuj adresata"<<endl;
+        cout<<"7. Zmien haslo"<<endl;
         cout<<"9. Zakoncz"<<endl;
 
         wybor=_getch();
@@ -389,26 +419,13 @@ void uruchomMenuUzytkownika(int idZalogowanegoUzytkownika) {
             usunAdresata(kontakty, idZalogowanegoUzytkownika);
         } else if(wybor=='6') {
             modyfikujKontakt(kontakty, idZalogowanegoUzytkownika);
+        } else if(wybor=='7') {
+            zmienHaslo(idZalogowanegoUzytkownika, uzytkownicy);
         } else if(wybor=='9') {
             zapiszDoPlikuKontakty(kontakty);
             exit(0);
         }
     }
-}
-
-void zapiszDoPlikuUzytkownicy(vector <Uzytkownik> uzytkownicy) {
-
-    fstream plik;
-    plik.open("Uzytkownicy.txt",ios::out);
-
-    for (int i=0; i<=uzytkownicy.size()-1; i++) {
-        plik<<uzytkownicy[i].idUzytkownika<<"|";
-        plik<<uzytkownicy[i].nazwa<<"|";
-        plik<<uzytkownicy[i].haslo<<"|"<<endl;
-    }
-    plik.close();
-    cout<<"\nPlik z lista uzytkownikow zostal pomyslnie zaktualizowany.\n";
-    system("pause");
 }
 
 vector <Uzytkownik> odczytajUzytkownikowZPliku() {
@@ -429,19 +446,14 @@ vector <Uzytkownik> odczytajUzytkownikowZPliku() {
                     indeksWykryciaZnakuPodzialu++;
                 }
             }
-
-
             string idString(liniaZDanymi,0,tablicaIndeksowPodzialow[0]);
             int id = atoi(idString.c_str());
             string nazwa(liniaZDanymi,tablicaIndeksowPodzialow[0]+1,tablicaIndeksowPodzialow[1]-tablicaIndeksowPodzialow[0]-1);
             string haslo(liniaZDanymi,tablicaIndeksowPodzialow[1]+1,tablicaIndeksowPodzialow[2]-tablicaIndeksowPodzialow[1]-1);
-
-
             Uzytkownik uzytkownikDoPrzesylaniaDanych;
             uzytkownikDoPrzesylaniaDanych.idUzytkownika=id;
             uzytkownikDoPrzesylaniaDanych.nazwa=nazwa;
             uzytkownikDoPrzesylaniaDanych.haslo=haslo;
-
             uzytkownicy.push_back(uzytkownikDoPrzesylaniaDanych);
             i++;
         }
@@ -456,19 +468,14 @@ vector <Uzytkownik> odczytajUzytkownikowZPliku() {
 void zarejestrujUzytkownika() {
     vector <Uzytkownik> uzytkownicy=odczytajUzytkownikowZPliku();
     Uzytkownik uzytkownikDoDodania;
-
     cout<<"Podaj nazwe uzytkownika: ";
     cin>>uzytkownikDoDodania.nazwa;
     cout<<"Podaj haslo uzytkownika: ";
     cin>>uzytkownikDoDodania.haslo;
     uzytkownikDoDodania.idUzytkownika=uzytkownicy.size()+1;
-
     uzytkownicy.push_back(uzytkownikDoDodania);
-
     cout<<"Uzytkownik zostal zarejestrowany."<<endl;
-
     cout<<"Id nadane uzytkownikowi "<<uzytkownikDoDodania.nazwa<< " to: "<<uzytkownicy[uzytkownicy.size()-1].idUzytkownika<<endl;
-
     zapiszDoPlikuUzytkownicy(uzytkownicy);
 }
 
@@ -484,7 +491,7 @@ void logowanie() {
             cout<<"Podaj haslo uzytkownika: ";
             cin>>podaneHaslo;
             if(podaneHaslo==uzytkownicy[i].haslo) {
-                uruchomMenuUzytkownika(uzytkownicy[i].idUzytkownika);
+                uruchomMenuUzytkownika(uzytkownicy[i].idUzytkownika,uzytkownicy);
             } else cout<<"Podano nieprawidlowe haslo"<<endl;
         } else if(i==uzytkownicy.size()&&podaneHaslo=="") cout<<"Uzytkownik o nazwie "<<podanaNazwa<<" nie posiada jeszcze konta"<<endl;
     }
