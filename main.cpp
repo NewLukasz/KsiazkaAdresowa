@@ -81,19 +81,22 @@ Adresat dodajKontakt(vector<Adresat> kontakty, int idZalogowanegoUzytkownika) {
     return kontaktDoDodania;
 }
 
-void wyswietlanieWszystkichKontaktow(vector <Adresat> kontakty) {
+void wyswietlanieWszystkichKontaktow(vector <Adresat> kontakty, int idZalogowanegoUzytkownika) {
     if(kontakty.size()>0) {
         for (int i=0; i<=kontakty.size()-1; i++) {
             if(kontakty[i].id!=0) {
                 if(kontakty[i].nazwisko!="usunieto") {
-                    cout<<"ID: "<<kontakty[i].id<<endl;
-                    cout<<"IDZalogowanegoUzytkownika przy tworzeniu: "<<kontakty[i].idUzytkownika<<endl;
-                    cout<<"Imie: "<<kontakty[i].imie<<endl;
-                    cout<<"Nazwisko: "<<kontakty[i].nazwisko<<endl;
-                    cout<<"Email: "<<kontakty[i].email<<endl;
-                    cout<<"Numer telefonu: "<<kontakty[i].numerTelefonu<<endl;
-                    cout<<"Adres: "<<kontakty[i].adres<<endl;
-                    cout<<"_________________________________________________"<<endl;
+                    if(kontakty[i].idUzytkownika==idZalogowanegoUzytkownika) {
+                        cout<<"ID: "<<kontakty[i].id<<endl;
+                        cout<<"IDZalogowanegoUzytkownika przy tworzeniu: "<<kontakty[i].idUzytkownika<<endl;
+                        cout<<"Imie: "<<kontakty[i].imie<<endl;
+                        cout<<"Nazwisko: "<<kontakty[i].nazwisko<<endl;
+                        cout<<"Email: "<<kontakty[i].email<<endl;
+                        cout<<"Numer telefonu: "<<kontakty[i].numerTelefonu<<endl;
+                        cout<<"Adres: "<<kontakty[i].adres<<endl;
+                        cout<<"_________________________________________________"<<endl;
+                    }
+
                 }
             }
         }
@@ -129,7 +132,7 @@ void wyszukajPoImieniu(vector<Adresat> kontakty, int idZalogowanegoUzytkownika) 
     system("pause");
 }
 
-void wyszukajPoNazwisku(vector<Adresat> kontakty) {
+void wyszukajPoNazwisku(vector<Adresat> kontakty, int idZalogowanegoUzytkownika) {
     if(kontakty.size()>0) {
         string nazwisko;
         int iloscWyswietlen=0;
@@ -230,11 +233,11 @@ vector <Adresat> odczytajKontaktyZPliku() {
     }
 }
 
-void usunAdresata(vector <Adresat> &kontakty) {
+void usunAdresata(vector <Adresat> &kontakty, int idZalogowanegoUzytkownika) {
     if(kontakty.size()>0) {
         system("cls");
         int numerIDAdresataDoUsuniecia;
-        wyswietlanieWszystkichKontaktow(kontakty);
+        wyswietlanieWszystkichKontaktow(kontakty, idZalogowanegoUzytkownika);
         cout<<"Podaj numer ID adresata, ktory ma zostac usuniety: ";
         cin>>numerIDAdresataDoUsuniecia;
         cout<<"Czy jestes pewnie ze chcesz usunac adresata z przypisanym "<<numerIDAdresataDoUsuniecia<<" numerem ID? Jezeli tak wcisnij t"<<endl;
@@ -261,11 +264,11 @@ void usunAdresata(vector <Adresat> &kontakty) {
     zapiszDoPlikuKontakty(kontakty);
 }
 
-void modyfikujKontakt(vector <Adresat> &kontakty) {
+void modyfikujKontakt(vector <Adresat> &kontakty, int idZalogowanegoUzytkownika) {
     if(kontakty.size()>0) {
         system("cls");
         int numerIDDoModyfikacji=0;
-        wyswietlanieWszystkichKontaktow(kontakty);
+        wyswietlanieWszystkichKontaktow(kontakty, idZalogowanegoUzytkownika);
         cout<<"Podaj ID kontaktu do modyfikacji: ";
         cin>>numerIDDoModyfikacji;
         system("cls");
@@ -358,15 +361,15 @@ void uruchomMenuUzytkownika(int idZalogowanegoUzytkownika) {
             wyszukajPoImieniu(kontakty, idZalogowanegoUzytkownika);
         } else if(wybor=='3') {
             system("cls");
-            wyszukajPoNazwisku(kontakty);
+            wyszukajPoNazwisku(kontakty, idZalogowanegoUzytkownika);
         } else if(wybor=='4') {
             system("cls");
-            wyswietlanieWszystkichKontaktow(kontakty);
+            wyswietlanieWszystkichKontaktow(kontakty, idZalogowanegoUzytkownika);
             system("pause");
         } else if(wybor=='5') {
-            usunAdresata(kontakty);
+            usunAdresata(kontakty, idZalogowanegoUzytkownika);
         } else if(wybor=='6') {
-            modyfikujKontakt(kontakty);
+            modyfikujKontakt(kontakty, idZalogowanegoUzytkownika);
         } else if(wybor=='9') {
             zapiszDoPlikuKontakty(kontakty);
             exit(0);
