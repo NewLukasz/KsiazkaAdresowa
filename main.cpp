@@ -4,6 +4,7 @@
 #include <iomanip>
 #include <fstream>
 #include <vector>
+#include <bits/stdc++.h>
 
 using namespace std;
 
@@ -37,11 +38,13 @@ void modyfikujKontakt(vector <Adresat> &kontakty, int idZalogowanegoUzytkownika)
 
 void zapiszDoPlikuUzytkownicy(vector <Uzytkownik> uzytkownicy);
 
+void odczytajKontantyZPlikuDlaUzytkownikaNiezalogowanegoIZapiszDoPlikuTymczasowego(int idAktualnieZalogowanegoUzytkownika);
+
 void zmienHaslo(int idZalogowanegoUzytkownika, vector <Uzytkownik> uzytkownicy);
 
 vector <Uzytkownik> odczytajUzytkownikowZPliku();
 
-vector <Adresat> odczytajKontaktyZPliku(int idAktualnieZalogowanegoUzytkownika);
+vector <Adresat> odczytajKontaktyZPlikuDlaUzytkownikaZalogowanego(int idAktualnieZalogowanegoUzytkownika);
 
 void uruchomMenuUzytkownika(int idZalogowanegoUzytkownika, vector <Uzytkownik> uzytkownicy);
 
@@ -51,6 +54,63 @@ void wyswietlMenuLogowania();
 
 void zarejestrujUzytkownika();
 
+int okreslenieKolejnegoNumeruIdDlaKontaktuNaPodstawieDwochPlikow() {
+    vector <int> numeryIDKontaktow;
+    fstream plik;
+    plik.open("ListaKontaktow.txt",ios::in);
+    if(plik.good()==true) {
+        string liniaZDanymi;
+        int iloscKontaktow=0;
+        int i=0;
+        while(getline(plik,liniaZDanymi)) {
+            int indeksWykryciaZnakuPodzialu=0;
+            for(int k=0; k<liniaZDanymi.length(); k++) {
+                if(liniaZDanymi[k]=='|') {
+                    indeksWykryciaZnakuPodzialu=k;
+                    string idString(liniaZDanymi,0,indeksWykryciaZnakuPodzialu);
+                    int id = atoi(idString.c_str());
+                    //cout<<"ID: "<<id<<endl;
+                    numeryIDKontaktow.push_back(id);
+                    i++;
+                    break;
+                }
+            }
+        }
+        plik.close();
+    }
+
+
+    fstream plikTymczasowy;
+    plikTymczasowy.open("ListaKontaktowTymczasowa.txt",ios::in);
+    if(plikTymczasowy.good()==true) {
+        string liniaZDanymi;
+        int iloscKontaktow=0;
+        int i=0;
+        while(getline(plikTymczasowy,liniaZDanymi)) {
+            int indeksWykryciaZnakuPodzialu=0;
+            for(int k=0; k<liniaZDanymi.length(); k++) {
+                if(liniaZDanymi[k]=='|') {
+                    indeksWykryciaZnakuPodzialu=k;
+                    string idString(liniaZDanymi,0,indeksWykryciaZnakuPodzialu);
+                    int id = atoi(idString.c_str());
+                    //cout<<"ID: "<<id<<endl;
+                    numeryIDKontaktow.push_back(id);
+                    i++;
+                    break;
+                }
+            }
+        }
+        plikTymczasowy.close();
+    }
+
+    for(int i=0; i<numeryIDKontaktow.size();i++){
+        cout<<numeryIDKontaktow[i]<<endl;
+    }
+    cout<<"Najwiekszy id to: "<<*max_element(numeryIDKontaktow.begin(),numeryIDKontaktow.end())<<endl;
+
+    return *max_element(numeryIDKontaktow.begin(),numeryIDKontaktow.end());
+
+}
 
 int main() {
     wyswietlMenuLogowania();
@@ -61,9 +121,15 @@ void wyswietlMenuLogowania() {
     while(1) {
         system("cls");
 
+
         cout<<"1. Logowanie"<<endl;
         cout<<"2. Rejestracja"<<endl;
         cout<<"3. Zamknij program"<<endl;
+
+        int a=0;
+        a=okreslenieKolejnegoNumeruIdDlaKontaktuNaPodstawieDwochPlikow();
+        cout<<"a wynosi: "<<a<<endl;
+
 
         wybor=_getch();
         if(wybor=='1') {
@@ -89,6 +155,7 @@ void logowanie() {
             cout<<"Podaj haslo uzytkownika: ";
             cin>>podaneHaslo;
             if(podaneHaslo==uzytkownicy[i].haslo) {
+                odczytajKontantyZPlikuDlaUzytkownikaNiezalogowanegoIZapiszDoPlikuTymczasowego(uzytkownicy[i].idUzytkownika);
                 uruchomMenuUzytkownika(uzytkownicy[i].idUzytkownika,uzytkownicy);
             } else cout<<"Podano nieprawidlowe haslo"<<endl;
         } else if(i==uzytkownicy.size()&&podaneHaslo=="") cout<<"Uzytkownik o nazwie "<<podanaNazwa<<" nie posiada jeszcze konta"<<endl;
@@ -111,7 +178,7 @@ void zarejestrujUzytkownika() {
 }
 
 void uruchomMenuUzytkownika(int idZalogowanegoUzytkownika, vector <Uzytkownik> uzytkownicy) {
-    vector <Adresat> kontakty=odczytajKontaktyZPliku(idZalogowanegoUzytkownika);
+    vector <Adresat> kontakty=odczytajKontaktyZPlikuDlaUzytkownikaZalogowanego(idZalogowanegoUzytkownika);
     int iloscKontakow=kontakty.size();
     char wybor;
     while(1) {
@@ -407,7 +474,72 @@ void zapiszDoPlikuKontakty(vector <Adresat> kontakty) {
     system("pause");
 }
 
-vector <Adresat> odczytajKontaktyZPliku(int idAktualnieZalogowanegoUzytkownika) {
+void odczytajKontantyZPlikuDlaUzytkownikaNiezalogowanegoIZapiszDoPlikuTymczasowego(int idAktualnieZalogowanegoUzytkownika) {
+    cout<<"ID ZALOGOWANE W TWORZENIU PLIKU TYMCZASOWEGO: "<<idAktualnieZalogowanegoUzytkownika<<endl;
+    vector <Adresat> kontakty;
+    fstream plik;
+    plik.open("ListaKontaktow.txt",ios::in);
+    if(plik.good()==true) {
+        string liniaZDanymi;
+        int iloscKontaktow=0;
+        int i=1;
+        int const ILOSC_KOLUMN=7;
+        int tablicaIndeksowPodzialow[ILOSC_KOLUMN];
+        while(getline(plik,liniaZDanymi)) {
+            int indeksWykryciaZnakuPodzialu=0;
+            for(int k=0; k<liniaZDanymi.length(); k++) {
+                if(liniaZDanymi[k]=='|') {
+                    tablicaIndeksowPodzialow[indeksWykryciaZnakuPodzialu]=k;
+                    indeksWykryciaZnakuPodzialu++;
+                }
+            }
+
+            string idZalogowanegoUzytkownikaString (liniaZDanymi,tablicaIndeksowPodzialow[0]+1,tablicaIndeksowPodzialow[1]-tablicaIndeksowPodzialow[0]-1);
+            int idZalogowanegoUzytkownika = atoi(idZalogowanegoUzytkownikaString.c_str());
+            if(idAktualnieZalogowanegoUzytkownika!=idZalogowanegoUzytkownika) {
+                string idString(liniaZDanymi,0,tablicaIndeksowPodzialow[0]);
+                int id = atoi(idString.c_str());
+                string imie(liniaZDanymi,tablicaIndeksowPodzialow[1]+1,tablicaIndeksowPodzialow[2]-tablicaIndeksowPodzialow[1]-1);
+                string nazwisko(liniaZDanymi,tablicaIndeksowPodzialow[2]+1,tablicaIndeksowPodzialow[3]-tablicaIndeksowPodzialow[2]-1);
+                string email(liniaZDanymi,tablicaIndeksowPodzialow[3]+1,tablicaIndeksowPodzialow[4]-tablicaIndeksowPodzialow[3]-1);
+                string numerString(liniaZDanymi,tablicaIndeksowPodzialow[4]+1,tablicaIndeksowPodzialow[5]-tablicaIndeksowPodzialow[4]-1);
+                int numer=atoi(numerString.c_str());
+                string adres(liniaZDanymi,tablicaIndeksowPodzialow[5]+1,tablicaIndeksowPodzialow[6]-tablicaIndeksowPodzialow[5]-1);
+                Adresat kontaktDoPrzesylaniaDanych;
+                kontaktDoPrzesylaniaDanych.id=id;
+                kontaktDoPrzesylaniaDanych.imie=imie;
+                kontaktDoPrzesylaniaDanych.nazwisko=nazwisko;
+                kontaktDoPrzesylaniaDanych.email=email;
+                kontaktDoPrzesylaniaDanych.numerTelefonu=numer;
+                kontaktDoPrzesylaniaDanych.adres=adres;
+                kontaktDoPrzesylaniaDanych.idUzytkownika=idZalogowanegoUzytkownika;
+                kontakty.push_back(kontaktDoPrzesylaniaDanych);
+                i++;
+                system("pause");
+            }
+        }
+        plik.close();
+    }
+
+    fstream plikTymczasowy;
+    plikTymczasowy.open("ListaKontaktowTymczasowa.txt",ios::out);
+
+    if(kontakty.size()>=1) {
+        for (int i=0; i<=kontakty.size()-1; i++) {
+            plikTymczasowy<<kontakty[i].id<<"|";
+            plikTymczasowy<<kontakty[i].idUzytkownika<<"|";
+            plikTymczasowy<<kontakty[i].imie<<"|";
+            plikTymczasowy<<kontakty[i].nazwisko<<"|";
+            plikTymczasowy<<kontakty[i].email<<"|";
+            plikTymczasowy<<kontakty[i].numerTelefonu<<"|";
+            plikTymczasowy<<kontakty[i].adres<<"|";
+            plikTymczasowy<<endl;
+        }
+    }
+    plikTymczasowy.close();
+}
+
+vector <Adresat> odczytajKontaktyZPlikuDlaUzytkownikaZalogowanego(int idAktualnieZalogowanegoUzytkownika) {
     vector <Adresat> kontakty;
     fstream plik;
     plik.open("ListaKontaktow.txt",ios::in);
@@ -448,25 +580,6 @@ vector <Adresat> odczytajKontaktyZPliku(int idAktualnieZalogowanegoUzytkownika) 
                 kontakty.push_back(kontaktDoPrzesylaniaDanych);
                 i++;
             }
-            /*
-            string idString(liniaZDanymi,0,tablicaIndeksowPodzialow[0]);
-            int id = atoi(idString.c_str());
-            string imie(liniaZDanymi,tablicaIndeksowPodzialow[1]+1,tablicaIndeksowPodzialow[2]-tablicaIndeksowPodzialow[1]-1);
-            string nazwisko(liniaZDanymi,tablicaIndeksowPodzialow[2]+1,tablicaIndeksowPodzialow[3]-tablicaIndeksowPodzialow[2]-1);
-            string email(liniaZDanymi,tablicaIndeksowPodzialow[3]+1,tablicaIndeksowPodzialow[4]-tablicaIndeksowPodzialow[3]-1);
-            string numerString(liniaZDanymi,tablicaIndeksowPodzialow[4]+1,tablicaIndeksowPodzialow[5]-tablicaIndeksowPodzialow[4]-1);
-            int numer=atoi(numerString.c_str());
-            string adres(liniaZDanymi,tablicaIndeksowPodzialow[5]+1,tablicaIndeksowPodzialow[6]-tablicaIndeksowPodzialow[5]-1);
-            Adresat kontaktDoPrzesylaniaDanych;
-            kontaktDoPrzesylaniaDanych.id=id;
-            kontaktDoPrzesylaniaDanych.imie=imie;
-            kontaktDoPrzesylaniaDanych.nazwisko=nazwisko;
-            kontaktDoPrzesylaniaDanych.email=email;
-            kontaktDoPrzesylaniaDanych.numerTelefonu=numer;
-            kontaktDoPrzesylaniaDanych.adres=adres;
-            kontaktDoPrzesylaniaDanych.idUzytkownika=idZalogowanegoUzytkownika;
-            kontakty.push_back(kontaktDoPrzesylaniaDanych);
-            i++;*/
         }
         plik.close();
         return kontakty;
