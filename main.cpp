@@ -283,7 +283,13 @@ int okreslenieKolejnegoNumeruIdDlaKontaktuNaPodstawiePlikuTymczasowegoOrazPamiec
         }
         plikTymczasowy.close();
     }
-    return *max_element(numeryIDKontaktow.begin(),numeryIDKontaktow.end());
+
+    if(numeryIDKontaktow.size()>0) {
+        return *max_element(numeryIDKontaktow.begin(),numeryIDKontaktow.end());
+    } else {
+        return 0;
+    }
+
 }
 
 void wyszukajPoImieniu(vector<Adresat> kontakty, int idZalogowanegoUzytkownika) {
