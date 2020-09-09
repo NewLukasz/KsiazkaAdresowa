@@ -78,25 +78,25 @@ void przeniesienieKontaktowZPlikuTymczasowego() {
             string idZalogowanegoUzytkownikaString (liniaZDanymi,tablicaIndeksowPodzialow[0]+1,tablicaIndeksowPodzialow[1]-tablicaIndeksowPodzialow[0]-1);
             int idZalogowanegoUzytkownika = atoi(idZalogowanegoUzytkownikaString.c_str());
 
-                string idString(liniaZDanymi,0,tablicaIndeksowPodzialow[0]);
-                int id = atoi(idString.c_str());
-                string imie(liniaZDanymi,tablicaIndeksowPodzialow[1]+1,tablicaIndeksowPodzialow[2]-tablicaIndeksowPodzialow[1]-1);
-                string nazwisko(liniaZDanymi,tablicaIndeksowPodzialow[2]+1,tablicaIndeksowPodzialow[3]-tablicaIndeksowPodzialow[2]-1);
-                string email(liniaZDanymi,tablicaIndeksowPodzialow[3]+1,tablicaIndeksowPodzialow[4]-tablicaIndeksowPodzialow[3]-1);
-                string numerString(liniaZDanymi,tablicaIndeksowPodzialow[4]+1,tablicaIndeksowPodzialow[5]-tablicaIndeksowPodzialow[4]-1);
-                int numer=atoi(numerString.c_str());
-                string adres(liniaZDanymi,tablicaIndeksowPodzialow[5]+1,tablicaIndeksowPodzialow[6]-tablicaIndeksowPodzialow[5]-1);
-                Adresat kontaktDoPrzesylaniaDanych;
-                kontaktDoPrzesylaniaDanych.id=id;
-                kontaktDoPrzesylaniaDanych.imie=imie;
-                kontaktDoPrzesylaniaDanych.nazwisko=nazwisko;
-                kontaktDoPrzesylaniaDanych.email=email;
-                kontaktDoPrzesylaniaDanych.numerTelefonu=numer;
-                kontaktDoPrzesylaniaDanych.adres=adres;
-                kontaktDoPrzesylaniaDanych.idUzytkownika=idZalogowanegoUzytkownika;
-                kontakty.push_back(kontaktDoPrzesylaniaDanych);
-                i++;
-                system("pause");
+            string idString(liniaZDanymi,0,tablicaIndeksowPodzialow[0]);
+            int id = atoi(idString.c_str());
+            string imie(liniaZDanymi,tablicaIndeksowPodzialow[1]+1,tablicaIndeksowPodzialow[2]-tablicaIndeksowPodzialow[1]-1);
+            string nazwisko(liniaZDanymi,tablicaIndeksowPodzialow[2]+1,tablicaIndeksowPodzialow[3]-tablicaIndeksowPodzialow[2]-1);
+            string email(liniaZDanymi,tablicaIndeksowPodzialow[3]+1,tablicaIndeksowPodzialow[4]-tablicaIndeksowPodzialow[3]-1);
+            string numerString(liniaZDanymi,tablicaIndeksowPodzialow[4]+1,tablicaIndeksowPodzialow[5]-tablicaIndeksowPodzialow[4]-1);
+            int numer=atoi(numerString.c_str());
+            string adres(liniaZDanymi,tablicaIndeksowPodzialow[5]+1,tablicaIndeksowPodzialow[6]-tablicaIndeksowPodzialow[5]-1);
+            Adresat kontaktDoPrzesylaniaDanych;
+            kontaktDoPrzesylaniaDanych.id=id;
+            kontaktDoPrzesylaniaDanych.imie=imie;
+            kontaktDoPrzesylaniaDanych.nazwisko=nazwisko;
+            kontaktDoPrzesylaniaDanych.email=email;
+            kontaktDoPrzesylaniaDanych.numerTelefonu=numer;
+            kontaktDoPrzesylaniaDanych.adres=adres;
+            kontaktDoPrzesylaniaDanych.idUzytkownika=idZalogowanegoUzytkownika;
+            kontakty.push_back(kontaktDoPrzesylaniaDanych);
+            i++;
+            system("pause");
 
         }
         plik.close();
@@ -152,7 +152,12 @@ void logowanie() {
     system("cls");
     cout<<"Podaj nazwe uzytkownika: ";
     cin>>podanaNazwa;
-
+    if(uzytkownicy.size()==0) {
+        system("cls");
+        cout<<"Brak zarejestrowanych uzytkownikow. Zarejestruj sie."<<endl;
+        system("pause");
+        wyswietlMenuLogowania();
+    }
     for(int i=0; i<=uzytkownicy.size(); i++) {
         if(podanaNazwa==uzytkownicy[i].nazwa) {
             cout<<"Podaj haslo uzytkownika: ";
@@ -672,7 +677,6 @@ vector <Uzytkownik> odczytajUzytkownikowZPliku() {
         plik.close();
         return uzytkownicy;
     } else {
-        cout<<"Brak uzytkownikow - rozpocznij dodawanie"<<endl;
         return uzytkownicy;
     }
 }
