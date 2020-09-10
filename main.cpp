@@ -67,6 +67,9 @@ void przeniesienieKontaktowZPlikuTymczasowego() {
         int const ILOSC_KOLUMN=7;
         int tablicaIndeksowPodzialow[ILOSC_KOLUMN];
         while(getline(plik,liniaZDanymi)) {
+
+            cout<<liniaZDanymi<<endl;
+
             int indeksWykryciaZnakuPodzialu=0;
             for(int k=0; k<liniaZDanymi.length(); k++) {
                 if(liniaZDanymi[k]=='|') {
@@ -222,9 +225,9 @@ void uruchomMenuUzytkownika(int idZalogowanegoUzytkownika, vector <Uzytkownik> u
         } else if(wybor=='7') {
             zmienHaslo(idZalogowanegoUzytkownika, uzytkownicy);
         } else if(wybor=='9') {
+            przeniesienieKontaktowZPlikuTymczasowego();
             wyswietlMenuLogowania();
             zapiszDoPlikuKontakty(kontakty);
-            przeniesienieKontaktowZPlikuTymczasowego();
             //tutaj przeniesienie z pliku tymczasowego do normalnego
         }
     }
