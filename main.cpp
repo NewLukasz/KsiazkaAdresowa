@@ -19,10 +19,6 @@ struct Uzytkownik {
     string nazwa,haslo;
 };
 
-Adresat rozszyfrujDaneKontaktu(string liniaZDanymi){
-
-}
-
 Adresat dodajKontakt(vector<Adresat> kontakty, int idZalogowanegoUzytkownika, int ostatniZajetyAdresID);
 int okreslenieKolejnegoNumeruIdDlaKontaktuNaPodstawiePlikuTymczasowegoOrazPamieci(vector <Adresat> kontakty);
 int weryfikacjaPoprawnosciNumeru();
@@ -38,6 +34,8 @@ void odczytajKontantyZPlikuDlaUzytkownikaNiezalogowanegoIZapiszDoPlikuTymczasowe
 void odczytajKontantyZPlikuDlaUzytkownikaZalogowanegoIZapiszDoPliku(int idAktualnieZalogowanegoUzytkownika);
 void przeniesienieKontaktowZPlikuTymczasowego();
 vector <Adresat> odczytajKontaktyZPlikuDlaUzytkownikaZalogowanego(int idAktualnieZalogowanegoUzytkownika);
+int wyznaczIDUzytkownikaKtoryStworzylKontakt(string liniaZDanymi);
+Adresat rozszyfrujDaneKontaktu(string liniaZDanymi);
 
 vector <Uzytkownik> odczytajUzytkownikowZPliku();
 void zapiszDoPlikuUzytkownicy(vector <Uzytkownik> uzytkownicy);
@@ -353,43 +351,14 @@ void odczytajKontantyZPlikuDlaUzytkownikaNiezalogowanegoIZapiszDoPlikuTymczasowe
     if(plik.good()==true) {
         string liniaZDanymi;
         int i=1;
-        int const ILOSC_KOLUMN=7;
-        int tablicaIndeksowPodzialow[ILOSC_KOLUMN];
         while(getline(plik,liniaZDanymi)) {
-            int indeksWykryciaZnakuPodzialu=0;
-            for(int k=0; k<liniaZDanymi.length(); k++) {
-                if(liniaZDanymi[k]=='|') {
-                    tablicaIndeksowPodzialow[indeksWykryciaZnakuPodzialu]=k;
-                    indeksWykryciaZnakuPodzialu++;
-                }
+            if(idAktualnieZalogowanegoUzytkownika!=wyznaczIDUzytkownikaKtoryStworzylKontakt(liniaZDanymi)) {
+                kontakty.push_back(rozszyfrujDaneKontaktu(liniaZDanymi));
             }
-
-            string idZalogowanegoUzytkownikaString (liniaZDanymi,tablicaIndeksowPodzialow[0]+1,tablicaIndeksowPodzialow[1]-tablicaIndeksowPodzialow[0]-1);
-            int idZalogowanegoUzytkownika = atoi(idZalogowanegoUzytkownikaString.c_str());
-            if(idAktualnieZalogowanegoUzytkownika!=idZalogowanegoUzytkownika) {
-                string idString(liniaZDanymi,0,tablicaIndeksowPodzialow[0]);
-                int id = atoi(idString.c_str());
-                string imie(liniaZDanymi,tablicaIndeksowPodzialow[1]+1,tablicaIndeksowPodzialow[2]-tablicaIndeksowPodzialow[1]-1);
-                string nazwisko(liniaZDanymi,tablicaIndeksowPodzialow[2]+1,tablicaIndeksowPodzialow[3]-tablicaIndeksowPodzialow[2]-1);
-                string email(liniaZDanymi,tablicaIndeksowPodzialow[3]+1,tablicaIndeksowPodzialow[4]-tablicaIndeksowPodzialow[3]-1);
-                string numerString(liniaZDanymi,tablicaIndeksowPodzialow[4]+1,tablicaIndeksowPodzialow[5]-tablicaIndeksowPodzialow[4]-1);
-                int numer=atoi(numerString.c_str());
-                string adres(liniaZDanymi,tablicaIndeksowPodzialow[5]+1,tablicaIndeksowPodzialow[6]-tablicaIndeksowPodzialow[5]-1);
-                Adresat kontaktDoPrzesylaniaDanych;
-                kontaktDoPrzesylaniaDanych.id=id;
-                kontaktDoPrzesylaniaDanych.imie=imie;
-                kontaktDoPrzesylaniaDanych.nazwisko=nazwisko;
-                kontaktDoPrzesylaniaDanych.email=email;
-                kontaktDoPrzesylaniaDanych.numerTelefonu=numer;
-                kontaktDoPrzesylaniaDanych.adres=adres;
-                kontaktDoPrzesylaniaDanych.idUzytkownika=idZalogowanegoUzytkownika;
-                kontakty.push_back(kontaktDoPrzesylaniaDanych);
-                i++;
-            }
+            i++;
         }
-        plik.close();
     }
-
+    plik.close();
     fstream plikTymczasowy;
     plikTymczasowy.open("Adresaci_tymczasowy.txt",ios::out);
 
@@ -414,37 +383,9 @@ void odczytajKontantyZPlikuDlaUzytkownikaZalogowanegoIZapiszDoPliku(int idAktual
     if(plik.good()==true) {
         string liniaZDanymi;
         int i=1;
-        int const ILOSC_KOLUMN=7;
-        int tablicaIndeksowPodzialow[ILOSC_KOLUMN];
         while(getline(plik,liniaZDanymi)) {
-            int indeksWykryciaZnakuPodzialu=0;
-            for(int k=0; k<liniaZDanymi.length(); k++) {
-                if(liniaZDanymi[k]=='|') {
-                    tablicaIndeksowPodzialow[indeksWykryciaZnakuPodzialu]=k;
-                    indeksWykryciaZnakuPodzialu++;
-                }
-            }
-
-            string idZalogowanegoUzytkownikaString (liniaZDanymi,tablicaIndeksowPodzialow[0]+1,tablicaIndeksowPodzialow[1]-tablicaIndeksowPodzialow[0]-1);
-            int idZalogowanegoUzytkownika = atoi(idZalogowanegoUzytkownikaString.c_str());
-            if(idAktualnieZalogowanegoUzytkownika==idZalogowanegoUzytkownika) {
-                string idString(liniaZDanymi,0,tablicaIndeksowPodzialow[0]);
-                int id = atoi(idString.c_str());
-                string imie(liniaZDanymi,tablicaIndeksowPodzialow[1]+1,tablicaIndeksowPodzialow[2]-tablicaIndeksowPodzialow[1]-1);
-                string nazwisko(liniaZDanymi,tablicaIndeksowPodzialow[2]+1,tablicaIndeksowPodzialow[3]-tablicaIndeksowPodzialow[2]-1);
-                string email(liniaZDanymi,tablicaIndeksowPodzialow[3]+1,tablicaIndeksowPodzialow[4]-tablicaIndeksowPodzialow[3]-1);
-                string numerString(liniaZDanymi,tablicaIndeksowPodzialow[4]+1,tablicaIndeksowPodzialow[5]-tablicaIndeksowPodzialow[4]-1);
-                int numer=atoi(numerString.c_str());
-                string adres(liniaZDanymi,tablicaIndeksowPodzialow[5]+1,tablicaIndeksowPodzialow[6]-tablicaIndeksowPodzialow[5]-1);
-                Adresat kontaktDoPrzesylaniaDanych;
-                kontaktDoPrzesylaniaDanych.id=id;
-                kontaktDoPrzesylaniaDanych.imie=imie;
-                kontaktDoPrzesylaniaDanych.nazwisko=nazwisko;
-                kontaktDoPrzesylaniaDanych.email=email;
-                kontaktDoPrzesylaniaDanych.numerTelefonu=numer;
-                kontaktDoPrzesylaniaDanych.adres=adres;
-                kontaktDoPrzesylaniaDanych.idUzytkownika=idZalogowanegoUzytkownika;
-                kontakty.push_back(kontaktDoPrzesylaniaDanych);
+            if(idAktualnieZalogowanegoUzytkownika==wyznaczIDUzytkownikaKtoryStworzylKontakt(liniaZDanymi)) {
+                kontakty.push_back(rozszyfrujDaneKontaktu(liniaZDanymi));
                 i++;
             }
         }
@@ -475,37 +416,8 @@ void przeniesienieKontaktowZPlikuTymczasowego(vector <Adresat> kontakty) {
     if(plik.good()==true) {
         string liniaZDanymi;
         int i=1;
-        int const ILOSC_KOLUMN=7;
-        int tablicaIndeksowPodzialow[ILOSC_KOLUMN];
         while(getline(plik,liniaZDanymi)) {
-            int indeksWykryciaZnakuPodzialu=0;
-            for(int k=0; k<liniaZDanymi.length(); k++) {
-                if(liniaZDanymi[k]=='|') {
-                    tablicaIndeksowPodzialow[indeksWykryciaZnakuPodzialu]=k;
-                    indeksWykryciaZnakuPodzialu++;
-                }
-            }
-
-            string idZalogowanegoUzytkownikaString (liniaZDanymi,tablicaIndeksowPodzialow[0]+1,tablicaIndeksowPodzialow[1]-tablicaIndeksowPodzialow[0]-1);
-            int idZalogowanegoUzytkownika = atoi(idZalogowanegoUzytkownikaString.c_str());
-
-            string idString(liniaZDanymi,0,tablicaIndeksowPodzialow[0]);
-            int id = atoi(idString.c_str());
-            string imie(liniaZDanymi,tablicaIndeksowPodzialow[1]+1,tablicaIndeksowPodzialow[2]-tablicaIndeksowPodzialow[1]-1);
-            string nazwisko(liniaZDanymi,tablicaIndeksowPodzialow[2]+1,tablicaIndeksowPodzialow[3]-tablicaIndeksowPodzialow[2]-1);
-            string email(liniaZDanymi,tablicaIndeksowPodzialow[3]+1,tablicaIndeksowPodzialow[4]-tablicaIndeksowPodzialow[3]-1);
-            string numerString(liniaZDanymi,tablicaIndeksowPodzialow[4]+1,tablicaIndeksowPodzialow[5]-tablicaIndeksowPodzialow[4]-1);
-            int numer=atoi(numerString.c_str());
-            string adres(liniaZDanymi,tablicaIndeksowPodzialow[5]+1,tablicaIndeksowPodzialow[6]-tablicaIndeksowPodzialow[5]-1);
-            Adresat kontaktDoPrzesylaniaDanych;
-            kontaktDoPrzesylaniaDanych.id=id;
-            kontaktDoPrzesylaniaDanych.imie=imie;
-            kontaktDoPrzesylaniaDanych.nazwisko=nazwisko;
-            kontaktDoPrzesylaniaDanych.email=email;
-            kontaktDoPrzesylaniaDanych.numerTelefonu=numer;
-            kontaktDoPrzesylaniaDanych.adres=adres;
-            kontaktDoPrzesylaniaDanych.idUzytkownika=idZalogowanegoUzytkownika;
-            kontaktyDoPrzeniesienia.push_back(kontaktDoPrzesylaniaDanych);
+            kontaktyDoPrzeniesienia.push_back(rozszyfrujDaneKontaktu(liniaZDanymi));
             i++;
         }
         plik.close();
@@ -535,46 +447,68 @@ vector <Adresat> odczytajKontaktyZPlikuDlaUzytkownikaZalogowanego(int idAktualni
     if(plik.good()==true) {
         string liniaZDanymi;
         int i=1;
-        int const ILOSC_KOLUMN=7;
-        int tablicaIndeksowPodzialow[ILOSC_KOLUMN];
         while(getline(plik,liniaZDanymi)) {
-            int indeksWykryciaZnakuPodzialu=0;
-            for(int k=0; k<liniaZDanymi.length(); k++) {
-                if(liniaZDanymi[k]=='|') {
-                    tablicaIndeksowPodzialow[indeksWykryciaZnakuPodzialu]=k;
-                    indeksWykryciaZnakuPodzialu++;
-                }
+            if(idAktualnieZalogowanegoUzytkownika==wyznaczIDUzytkownikaKtoryStworzylKontakt(liniaZDanymi)) {
+                kontakty.push_back(rozszyfrujDaneKontaktu(liniaZDanymi));
             }
-            string idZalogowanegoUzytkownikaString (liniaZDanymi,tablicaIndeksowPodzialow[0]+1,tablicaIndeksowPodzialow[1]-tablicaIndeksowPodzialow[0]-1);
-            int idZalogowanegoUzytkownika = atoi(idZalogowanegoUzytkownikaString.c_str());
-            if(idAktualnieZalogowanegoUzytkownika==idZalogowanegoUzytkownika) {
-                string idString(liniaZDanymi,0,tablicaIndeksowPodzialow[0]);
-                int id = atoi(idString.c_str());
-                string imie(liniaZDanymi,tablicaIndeksowPodzialow[1]+1,tablicaIndeksowPodzialow[2]-tablicaIndeksowPodzialow[1]-1);
-                string nazwisko(liniaZDanymi,tablicaIndeksowPodzialow[2]+1,tablicaIndeksowPodzialow[3]-tablicaIndeksowPodzialow[2]-1);
-                string email(liniaZDanymi,tablicaIndeksowPodzialow[3]+1,tablicaIndeksowPodzialow[4]-tablicaIndeksowPodzialow[3]-1);
-                string numerString(liniaZDanymi,tablicaIndeksowPodzialow[4]+1,tablicaIndeksowPodzialow[5]-tablicaIndeksowPodzialow[4]-1);
-                int numer=atoi(numerString.c_str());
-                string adres(liniaZDanymi,tablicaIndeksowPodzialow[5]+1,tablicaIndeksowPodzialow[6]-tablicaIndeksowPodzialow[5]-1);
-                Adresat kontaktDoPrzesylaniaDanych;
-                kontaktDoPrzesylaniaDanych.id=id;
-                kontaktDoPrzesylaniaDanych.imie=imie;
-                kontaktDoPrzesylaniaDanych.nazwisko=nazwisko;
-                kontaktDoPrzesylaniaDanych.email=email;
-                kontaktDoPrzesylaniaDanych.numerTelefonu=numer;
-                kontaktDoPrzesylaniaDanych.adres=adres;
-                kontaktDoPrzesylaniaDanych.idUzytkownika=idZalogowanegoUzytkownika;
-                kontakty.push_back(kontaktDoPrzesylaniaDanych);
-                i++;
-            }
+
+            i++;
         }
         plik.close();
         return kontakty;
     } else {
+
+
         cout<<"Brak kontaktow - rozpocznij dodawanie"<<endl;
         system("pause");
         return kontakty;
     }
+}
+int wyznaczIDUzytkownikaKtoryStworzylKontakt(string liniaZDanymi) {
+    int const ILOSC_KOLUMN=2;
+    int tablicaIndeksowPodzialow[ILOSC_KOLUMN];
+    int indeksWykryciaZnakuPodzialu=0;
+    for(int k=0; k<liniaZDanymi.length(); k++) {
+        if(liniaZDanymi[k]=='|') {
+            tablicaIndeksowPodzialow[indeksWykryciaZnakuPodzialu]=k;
+            indeksWykryciaZnakuPodzialu++;
+        }
+    }
+    string idZalogowanegoUzytkownikaString (liniaZDanymi,tablicaIndeksowPodzialow[0]+1,tablicaIndeksowPodzialow[1]-tablicaIndeksowPodzialow[0]-1);
+    int idZalogowanegoUzytkownika = atoi(idZalogowanegoUzytkownikaString.c_str());
+    string idString(liniaZDanymi,0,tablicaIndeksowPodzialow[0]);
+    int id = atoi(idString.c_str());
+    return idZalogowanegoUzytkownika;
+}
+Adresat rozszyfrujDaneKontaktu(string liniaZDanymi) {
+    int const ILOSC_KOLUMN=7;
+    int tablicaIndeksowPodzialow[ILOSC_KOLUMN];
+    int indeksWykryciaZnakuPodzialu=0;
+    for(int k=0; k<liniaZDanymi.length(); k++) {
+        if(liniaZDanymi[k]=='|') {
+            tablicaIndeksowPodzialow[indeksWykryciaZnakuPodzialu]=k;
+            indeksWykryciaZnakuPodzialu++;
+        }
+    }
+    string idZalogowanegoUzytkownikaString (liniaZDanymi,tablicaIndeksowPodzialow[0]+1,tablicaIndeksowPodzialow[1]-tablicaIndeksowPodzialow[0]-1);
+    int idZalogowanegoUzytkownika = atoi(idZalogowanegoUzytkownikaString.c_str());
+    string idString(liniaZDanymi,0,tablicaIndeksowPodzialow[0]);
+    int id = atoi(idString.c_str());
+    string imie(liniaZDanymi,tablicaIndeksowPodzialow[1]+1,tablicaIndeksowPodzialow[2]-tablicaIndeksowPodzialow[1]-1);
+    string nazwisko(liniaZDanymi,tablicaIndeksowPodzialow[2]+1,tablicaIndeksowPodzialow[3]-tablicaIndeksowPodzialow[2]-1);
+    string email(liniaZDanymi,tablicaIndeksowPodzialow[3]+1,tablicaIndeksowPodzialow[4]-tablicaIndeksowPodzialow[3]-1);
+    string numerString(liniaZDanymi,tablicaIndeksowPodzialow[4]+1,tablicaIndeksowPodzialow[5]-tablicaIndeksowPodzialow[4]-1);
+    int numer=atoi(numerString.c_str());
+    string adres(liniaZDanymi,tablicaIndeksowPodzialow[5]+1,tablicaIndeksowPodzialow[6]-tablicaIndeksowPodzialow[5]-1);
+    Adresat kontaktDoPrzesylaniaDanych;
+    kontaktDoPrzesylaniaDanych.id=id;
+    kontaktDoPrzesylaniaDanych.imie=imie;
+    kontaktDoPrzesylaniaDanych.nazwisko=nazwisko;
+    kontaktDoPrzesylaniaDanych.email=email;
+    kontaktDoPrzesylaniaDanych.numerTelefonu=numer;
+    kontaktDoPrzesylaniaDanych.adres=adres;
+    kontaktDoPrzesylaniaDanych.idUzytkownika=idZalogowanegoUzytkownika;
+    return kontaktDoPrzesylaniaDanych;
 }
 
 void zarejestrujUzytkownika() {
