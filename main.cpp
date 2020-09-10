@@ -153,14 +153,15 @@ void logowanie() {
     string podanaNazwa, podaneHaslo="";
     vector <Uzytkownik> uzytkownicy=odczytajUzytkownikowZPliku();
     system("cls");
-    cout<<"Podaj nazwe uzytkownika: ";
-    cin>>podanaNazwa;
     if(uzytkownicy.size()==0) {
         system("cls");
         cout<<"Brak zarejestrowanych uzytkownikow. Zarejestruj sie."<<endl;
         system("pause");
         wyswietlMenuLogowania();
     }
+    cout<<"Podaj nazwe uzytkownika: ";
+    cin>>podanaNazwa;
+
     for(int i=0; i<=uzytkownicy.size(); i++) {
         if(podanaNazwa==uzytkownicy[i].nazwa) {
             cout<<"Podaj haslo uzytkownika: ";
