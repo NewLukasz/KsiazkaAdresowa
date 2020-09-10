@@ -77,9 +77,6 @@ void przeniesienieKontaktowZPlikuTymczasowego(vector <Adresat> kontakty) {
         int const ILOSC_KOLUMN=7;
         int tablicaIndeksowPodzialow[ILOSC_KOLUMN];
         while(getline(plik,liniaZDanymi)) {
-
-            cout<<liniaZDanymi<<endl;
-
             int indeksWykryciaZnakuPodzialu=0;
             for(int k=0; k<liniaZDanymi.length(); k++) {
                 if(liniaZDanymi[k]=='|') {
@@ -109,15 +106,11 @@ void przeniesienieKontaktowZPlikuTymczasowego(vector <Adresat> kontakty) {
             kontaktDoPrzesylaniaDanych.idUzytkownika=idZalogowanegoUzytkownika;
             kontaktyDoPrzeniesienia.push_back(kontaktDoPrzesylaniaDanych);
             i++;
-            system("pause");
         }
         plik.close();
     }
-
     fstream plikTymczasowy;
     plikTymczasowy.open("ListaKontaktow.txt",ios::out|ios::app);
-
-
 
     if(kontaktyDoPrzeniesienia.size()>=1) {
         for (int i=0; i<=kontaktyDoPrzeniesienia.size()-1; i++) {
@@ -256,7 +249,6 @@ Adresat dodajKontakt(vector<Adresat> kontakty, int idZalogowanegoUzytkownika, in
     cin.ignore();
     getline(cin,kontaktDoDodania.adres);
     kontaktDoDodania.id=ostatniZajetyAdresID+1;
-    cout<<"ID KONTKTAUT KTORY BEDZIE UTWORZONY TO: "<<kontaktDoDodania.id<<endl;
     cout<<"Kontakt zostal dodany prawidlowo"<<endl;
     system("pause");
     kontaktDoDodania.idUzytkownika=idZalogowanegoUzytkownika;
@@ -570,7 +562,6 @@ void odczytajKontantyZPlikuDlaUzytkownikaNiezalogowanegoIZapiszDoPlikuTymczasowe
                 kontaktDoPrzesylaniaDanych.idUzytkownika=idZalogowanegoUzytkownika;
                 kontakty.push_back(kontaktDoPrzesylaniaDanych);
                 i++;
-                system("pause");
             }
         }
         plik.close();
@@ -612,7 +603,6 @@ vector <Adresat> odczytajKontaktyZPlikuDlaUzytkownikaZalogowanego(int idAktualni
                     indeksWykryciaZnakuPodzialu++;
                 }
             }
-
             string idZalogowanegoUzytkownikaString (liniaZDanymi,tablicaIndeksowPodzialow[0]+1,tablicaIndeksowPodzialow[1]-tablicaIndeksowPodzialow[0]-1);
             int idZalogowanegoUzytkownika = atoi(idZalogowanegoUzytkownikaString.c_str());
             if(idAktualnieZalogowanegoUzytkownika==idZalogowanegoUzytkownika) {
@@ -722,24 +712,3 @@ string weryfikacjaPoprawnosciMaila() {
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
