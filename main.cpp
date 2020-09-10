@@ -5,6 +5,7 @@
 #include <fstream>
 #include <vector>
 #include <bits/stdc++.h>
+#include <cstdio>
 
 using namespace std;
 
@@ -56,8 +57,17 @@ void zarejestrujUzytkownika();
 
 int okreslenieKolejnegoNumeruIdDlaKontaktuNaPodstawiePlikuTymczasowegoOrazPamieci(vector <Adresat> kontakty);
 
-void przeniesienieKontaktowZPlikuTymczasowego() {
-    vector <Adresat> kontakty;
+void przeniesienieKontaktowZPlikuTymczasowego();
+
+
+
+int main() {
+    wyswietlMenuLogowania();
+}
+
+
+void przeniesienieKontaktowZPlikuTymczasowego(vector <Adresat> kontakty) {
+    vector <Adresat> kontaktyDoPrzeniesienia;
     fstream plik;
     plik.open("ListaKontaktowTymczasowa.txt",ios::in);
     if(plik.good()==true) {
@@ -97,10 +107,9 @@ void przeniesienieKontaktowZPlikuTymczasowego() {
             kontaktDoPrzesylaniaDanych.numerTelefonu=numer;
             kontaktDoPrzesylaniaDanych.adres=adres;
             kontaktDoPrzesylaniaDanych.idUzytkownika=idZalogowanegoUzytkownika;
-            kontakty.push_back(kontaktDoPrzesylaniaDanych);
+            kontaktyDoPrzeniesienia.push_back(kontaktDoPrzesylaniaDanych);
             i++;
             system("pause");
-
         }
         plik.close();
     }
@@ -108,24 +117,21 @@ void przeniesienieKontaktowZPlikuTymczasowego() {
     fstream plikTymczasowy;
     plikTymczasowy.open("ListaKontaktow.txt",ios::out|ios::app);
 
-    if(kontakty.size()>=1) {
-        for (int i=0; i<=kontakty.size()-1; i++) {
-            plikTymczasowy<<kontakty[i].id<<"|";
-            plikTymczasowy<<kontakty[i].idUzytkownika<<"|";
-            plikTymczasowy<<kontakty[i].imie<<"|";
-            plikTymczasowy<<kontakty[i].nazwisko<<"|";
-            plikTymczasowy<<kontakty[i].email<<"|";
-            plikTymczasowy<<kontakty[i].numerTelefonu<<"|";
-            plikTymczasowy<<kontakty[i].adres<<"|";
+
+
+    if(kontaktyDoPrzeniesienia.size()>=1) {
+        for (int i=0; i<=kontaktyDoPrzeniesienia.size()-1; i++) {
+            plikTymczasowy<<kontaktyDoPrzeniesienia[i].id<<"|";
+            plikTymczasowy<<kontaktyDoPrzeniesienia[i].idUzytkownika<<"|";
+            plikTymczasowy<<kontaktyDoPrzeniesienia[i].imie<<"|";
+            plikTymczasowy<<kontaktyDoPrzeniesienia[i].nazwisko<<"|";
+            plikTymczasowy<<kontaktyDoPrzeniesienia[i].email<<"|";
+            plikTymczasowy<<kontaktyDoPrzeniesienia[i].numerTelefonu<<"|";
+            plikTymczasowy<<kontaktyDoPrzeniesienia[i].adres<<"|";
             plikTymczasowy<<endl;
         }
     }
     plikTymczasowy.close();
-}
-
-
-int main() {
-    wyswietlMenuLogowania();
 }
 
 void wyswietlMenuLogowania() {
@@ -144,6 +150,7 @@ void wyswietlMenuLogowania() {
             system("cls");
             zarejestrujUzytkownika();
         }  else if(wybor=='3') {
+            remove("ListaKontaktowTymczasowa.txt");
             exit(0);
         }
     }
@@ -225,10 +232,9 @@ void uruchomMenuUzytkownika(int idZalogowanegoUzytkownika, vector <Uzytkownik> u
         } else if(wybor=='7') {
             zmienHaslo(idZalogowanegoUzytkownika, uzytkownicy);
         } else if(wybor=='9') {
-            przeniesienieKontaktowZPlikuTymczasowego();
+            przeniesienieKontaktowZPlikuTymczasowego(kontakty);
             wyswietlMenuLogowania();
             zapiszDoPlikuKontakty(kontakty);
-            //tutaj przeniesienie z pliku tymczasowego do normalnego
         }
     }
 }
