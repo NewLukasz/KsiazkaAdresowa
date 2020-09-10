@@ -59,7 +59,7 @@ int okreslenieKolejnegoNumeruIdDlaKontaktuNaPodstawiePlikuTymczasowegoOrazPamiec
 
 void przeniesienieKontaktowZPlikuTymczasowego();
 
-
+void odczytajKontantyZPlikuDlaUzytkownikaZalogowanegoIZapiszDoPliku(int idAktualnieZalogowanegoUzytkownika);
 
 int main() {
     wyswietlMenuLogowania();
@@ -125,6 +125,7 @@ void przeniesienieKontaktowZPlikuTymczasowego(vector <Adresat> kontakty) {
         }
     }
     plikTymczasowy.close();
+    remove("ListaKontaktowTymczasowa.txt");
 }
 
 void wyswietlMenuLogowania() {
@@ -143,7 +144,6 @@ void wyswietlMenuLogowania() {
             system("cls");
             zarejestrujUzytkownika();
         }  else if(wybor=='3') {
-            remove("ListaKontaktowTymczasowa.txt");
             exit(0);
         }
     }
@@ -168,6 +168,7 @@ void logowanie() {
             cin>>podaneHaslo;
             if(podaneHaslo==uzytkownicy[i].haslo) {
                 odczytajKontantyZPlikuDlaUzytkownikaNiezalogowanegoIZapiszDoPlikuTymczasowego(uzytkownicy[i].idUzytkownika);
+                odczytajKontantyZPlikuDlaUzytkownikaZalogowanegoIZapiszDoPliku(uzytkownicy[i].idUzytkownika);
                 uruchomMenuUzytkownika(uzytkownicy[i].idUzytkownika,uzytkownicy);
             } else cout<<"Podano nieprawidlowe haslo"<<endl;
         } else if(i==uzytkownicy.size()&&podaneHaslo=="") cout<<"Uzytkownik o nazwie "<<podanaNazwa<<" nie posiada jeszcze konta"<<endl;
@@ -228,6 +229,7 @@ void uruchomMenuUzytkownika(int idZalogowanegoUzytkownika, vector <Uzytkownik> u
             przeniesienieKontaktowZPlikuTymczasowego(kontakty);
             wyswietlMenuLogowania();
             zapiszDoPlikuKontakty(kontakty);
+
         }
     }
 }
@@ -571,6 +573,70 @@ void odczytajKontantyZPlikuDlaUzytkownikaNiezalogowanegoIZapiszDoPlikuTymczasowe
 
     fstream plikTymczasowy;
     plikTymczasowy.open("ListaKontaktowTymczasowa.txt",ios::out);
+
+    if(kontakty.size()>=1) {
+        for (int i=0; i<=kontakty.size()-1; i++) {
+            plikTymczasowy<<kontakty[i].id<<"|";
+            plikTymczasowy<<kontakty[i].idUzytkownika<<"|";
+            plikTymczasowy<<kontakty[i].imie<<"|";
+            plikTymczasowy<<kontakty[i].nazwisko<<"|";
+            plikTymczasowy<<kontakty[i].email<<"|";
+            plikTymczasowy<<kontakty[i].numerTelefonu<<"|";
+            plikTymczasowy<<kontakty[i].adres<<"|";
+            plikTymczasowy<<endl;
+        }
+    }
+    plikTymczasowy.close();
+}
+
+void odczytajKontantyZPlikuDlaUzytkownikaZalogowanegoIZapiszDoPliku(int idAktualnieZalogowanegoUzytkownika) {
+    //NOWA FUNKCJA
+    vector <Adresat> kontakty;
+    fstream plik;
+    plik.open("ListaKontaktow.txt",ios::in);
+    if(plik.good()==true) {
+        string liniaZDanymi;
+        int iloscKontaktow=0;
+        int i=1;
+        int const ILOSC_KOLUMN=7;
+        int tablicaIndeksowPodzialow[ILOSC_KOLUMN];
+        while(getline(plik,liniaZDanymi)) {
+            int indeksWykryciaZnakuPodzialu=0;
+            for(int k=0; k<liniaZDanymi.length(); k++) {
+                if(liniaZDanymi[k]=='|') {
+                    tablicaIndeksowPodzialow[indeksWykryciaZnakuPodzialu]=k;
+                    indeksWykryciaZnakuPodzialu++;
+                }
+            }
+
+            string idZalogowanegoUzytkownikaString (liniaZDanymi,tablicaIndeksowPodzialow[0]+1,tablicaIndeksowPodzialow[1]-tablicaIndeksowPodzialow[0]-1);
+            int idZalogowanegoUzytkownika = atoi(idZalogowanegoUzytkownikaString.c_str());
+            if(idAktualnieZalogowanegoUzytkownika==idZalogowanegoUzytkownika) {
+                string idString(liniaZDanymi,0,tablicaIndeksowPodzialow[0]);
+                int id = atoi(idString.c_str());
+                string imie(liniaZDanymi,tablicaIndeksowPodzialow[1]+1,tablicaIndeksowPodzialow[2]-tablicaIndeksowPodzialow[1]-1);
+                string nazwisko(liniaZDanymi,tablicaIndeksowPodzialow[2]+1,tablicaIndeksowPodzialow[3]-tablicaIndeksowPodzialow[2]-1);
+                string email(liniaZDanymi,tablicaIndeksowPodzialow[3]+1,tablicaIndeksowPodzialow[4]-tablicaIndeksowPodzialow[3]-1);
+                string numerString(liniaZDanymi,tablicaIndeksowPodzialow[4]+1,tablicaIndeksowPodzialow[5]-tablicaIndeksowPodzialow[4]-1);
+                int numer=atoi(numerString.c_str());
+                string adres(liniaZDanymi,tablicaIndeksowPodzialow[5]+1,tablicaIndeksowPodzialow[6]-tablicaIndeksowPodzialow[5]-1);
+                Adresat kontaktDoPrzesylaniaDanych;
+                kontaktDoPrzesylaniaDanych.id=id;
+                kontaktDoPrzesylaniaDanych.imie=imie;
+                kontaktDoPrzesylaniaDanych.nazwisko=nazwisko;
+                kontaktDoPrzesylaniaDanych.email=email;
+                kontaktDoPrzesylaniaDanych.numerTelefonu=numer;
+                kontaktDoPrzesylaniaDanych.adres=adres;
+                kontaktDoPrzesylaniaDanych.idUzytkownika=idZalogowanegoUzytkownika;
+                kontakty.push_back(kontaktDoPrzesylaniaDanych);
+                i++;
+            }
+        }
+        plik.close();
+    }
+
+    fstream plikTymczasowy;
+    plikTymczasowy.open("ListaKontaktow.txt",ios::out);
 
     if(kontakty.size()>=1) {
         for (int i=0; i<=kontakty.size()-1; i++) {
