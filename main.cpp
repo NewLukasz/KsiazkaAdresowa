@@ -69,7 +69,7 @@ int main() {
 void przeniesienieKontaktowZPlikuTymczasowego(vector <Adresat> kontakty) {
     vector <Adresat> kontaktyDoPrzeniesienia;
     fstream plik;
-    plik.open("ListaKontaktowTymczasowa.txt",ios::in);
+    plik.open("Adresaci_tymczasowy.txt",ios::in);
     if(plik.good()==true) {
         string liniaZDanymi;
         int iloscKontaktow=0;
@@ -110,7 +110,7 @@ void przeniesienieKontaktowZPlikuTymczasowego(vector <Adresat> kontakty) {
         plik.close();
     }
     fstream plikTymczasowy;
-    plikTymczasowy.open("ListaKontaktow.txt",ios::out|ios::app);
+    plikTymczasowy.open("Adresaci.txt",ios::out|ios::app);
 
     if(kontaktyDoPrzeniesienia.size()>=1) {
         for (int i=0; i<=kontaktyDoPrzeniesienia.size()-1; i++) {
@@ -125,7 +125,7 @@ void przeniesienieKontaktowZPlikuTymczasowego(vector <Adresat> kontakty) {
         }
     }
     plikTymczasowy.close();
-    remove("ListaKontaktowTymczasowa.txt");
+    remove("Adresaci_tymczasowy.txt");
 }
 
 void wyswietlMenuLogowania() {
@@ -266,7 +266,7 @@ int okreslenieKolejnegoNumeruIdDlaKontaktuNaPodstawiePlikuTymczasowegoOrazPamiec
         }
     }
     fstream plikTymczasowy;
-    plikTymczasowy.open("ListaKontaktowTymczasowa.txt",ios::in);
+    plikTymczasowy.open("Adresaci_tymczasowy.txt",ios::in);
     if(plikTymczasowy.good()==true) {
         string liniaZDanymi;
         int iloscKontaktow=0;
@@ -509,7 +509,7 @@ void zmienHaslo(int idZalogowanegoUzytkownika, vector <Uzytkownik> uzytkownicy) 
 void zapiszDoPlikuKontakty(vector <Adresat> kontakty) {
 
     fstream plik;
-    plik.open("ListaKontaktow.txt",ios::out);
+    plik.open("Adresaci.txt",ios::out);
 
     for (int i=0; i<=kontakty.size()-1; i++) {
         plik<<kontakty[i].id<<"|";
@@ -529,7 +529,7 @@ void zapiszDoPlikuKontakty(vector <Adresat> kontakty) {
 void odczytajKontantyZPlikuDlaUzytkownikaNiezalogowanegoIZapiszDoPlikuTymczasowego(int idAktualnieZalogowanegoUzytkownika) {
     vector <Adresat> kontakty;
     fstream plik;
-    plik.open("ListaKontaktow.txt",ios::in);
+    plik.open("Adresaci.txt",ios::in);
     if(plik.good()==true) {
         string liniaZDanymi;
         int iloscKontaktow=0;
@@ -572,7 +572,7 @@ void odczytajKontantyZPlikuDlaUzytkownikaNiezalogowanegoIZapiszDoPlikuTymczasowe
     }
 
     fstream plikTymczasowy;
-    plikTymczasowy.open("ListaKontaktowTymczasowa.txt",ios::out);
+    plikTymczasowy.open("Adresaci_tymczasowy.txt",ios::out);
 
     if(kontakty.size()>=1) {
         for (int i=0; i<=kontakty.size()-1; i++) {
@@ -593,7 +593,7 @@ void odczytajKontantyZPlikuDlaUzytkownikaZalogowanegoIZapiszDoPliku(int idAktual
     //NOWA FUNKCJA
     vector <Adresat> kontakty;
     fstream plik;
-    plik.open("ListaKontaktow.txt",ios::in);
+    plik.open("Adresaci.txt",ios::in);
     if(plik.good()==true) {
         string liniaZDanymi;
         int iloscKontaktow=0;
@@ -636,7 +636,7 @@ void odczytajKontantyZPlikuDlaUzytkownikaZalogowanegoIZapiszDoPliku(int idAktual
     }
 
     fstream plikTymczasowy;
-    plikTymczasowy.open("ListaKontaktow.txt",ios::out);
+    plikTymczasowy.open("Adresaci.txt",ios::out);
 
     if(kontakty.size()>=1) {
         for (int i=0; i<=kontakty.size()-1; i++) {
@@ -656,7 +656,7 @@ void odczytajKontantyZPlikuDlaUzytkownikaZalogowanegoIZapiszDoPliku(int idAktual
 vector <Adresat> odczytajKontaktyZPlikuDlaUzytkownikaZalogowanego(int idAktualnieZalogowanegoUzytkownika) {
     vector <Adresat> kontakty;
     fstream plik;
-    plik.open("ListaKontaktow.txt",ios::in);
+    plik.open("Adresaci.txt",ios::in);
     if(plik.good()==true) {
         string liniaZDanymi;
         int iloscKontaktow=0;
