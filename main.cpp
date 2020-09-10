@@ -185,7 +185,6 @@ void zarejestrujUzytkownika() {
     uzytkownikDoDodania.idUzytkownika=uzytkownicy.size()+1;
     uzytkownicy.push_back(uzytkownikDoDodania);
     cout<<"Uzytkownik zostal zarejestrowany."<<endl;
-    cout<<"Id nadane uzytkownikowi "<<uzytkownikDoDodania.nazwa<< " to: "<<uzytkownicy[uzytkownicy.size()-1].idUzytkownika<<endl;
     zapiszDoPlikuUzytkownicy(uzytkownicy);
 }
 
@@ -481,11 +480,13 @@ void modyfikujKontakt(vector <Adresat> &kontakty, int idZalogowanegoUzytkownika)
                 break;
             }
         }
+        zapiszDoPlikuKontakty(kontakty);
     } else {
+        system("cls");
         cout<<"Brak kontaktow do modyfikacji. Rozpocznij dodawanie kontaktow."<<endl;
         system("pause");
     }
-    zapiszDoPlikuKontakty(kontakty);
+
 }
 
 void zmienHaslo(int idZalogowanegoUzytkownika, vector <Uzytkownik> uzytkownicy) {
