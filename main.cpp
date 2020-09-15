@@ -505,24 +505,35 @@ Adresat rozszyfrujDaneKontaktu(string liniaZDanymi) {
         }
     }
 
-
-    string idString(liniaZDanymi,0,tablicaIndeksowPodzialow[0]);
+    int dlugoscIdString=tablicaIndeksowPodzialow[0];
+    string idString(liniaZDanymi,0,dlugoscIdString);
     int id = atoi(idString.c_str());
 
-    string idZalogowanegoUzytkownikaString (liniaZDanymi,tablicaIndeksowPodzialow[0]+1,tablicaIndeksowPodzialow[1]-tablicaIndeksowPodzialow[0]-1);
+    int indeksPierwszegoZnakuDlaidZalogowanegoUzytkownikaString=tablicaIndeksowPodzialow[0]+1;
+    int dlugoscIdZalogowanegoUzytkownikaString=tablicaIndeksowPodzialow[1]-tablicaIndeksowPodzialow[0]-1;
+    string idZalogowanegoUzytkownikaString (liniaZDanymi,indeksPierwszegoZnakuDlaidZalogowanegoUzytkownikaString,dlugoscIdZalogowanegoUzytkownikaString);
     int idZalogowanegoUzytkownika = atoi(idZalogowanegoUzytkownikaString.c_str());
 
+    int indeksPierszegoZnakuDlaImienia=tablicaIndeksowPodzialow[1]+1;
+    int dlugoscImienia=tablicaIndeksowPodzialow[2]-tablicaIndeksowPodzialow[1]-1;
+    string imie(liniaZDanymi,indeksPierszegoZnakuDlaImienia,dlugoscImienia);
 
-    string imie(liniaZDanymi,tablicaIndeksowPodzialow[1]+1,tablicaIndeksowPodzialow[2]-tablicaIndeksowPodzialow[1]-1);
+    int indeksPierwszegoZnakuDlaNazwiska=tablicaIndeksowPodzialow[2]+1;
+    int dlugoscNazwiska=tablicaIndeksowPodzialow[3]-tablicaIndeksowPodzialow[2]-1;
+    string nazwisko(liniaZDanymi,indeksPierwszegoZnakuDlaNazwiska,dlugoscNazwiska);
 
-    string nazwisko(liniaZDanymi,tablicaIndeksowPodzialow[2]+1,tablicaIndeksowPodzialow[3]-tablicaIndeksowPodzialow[2]-1);
+    int indeksPierwszegoZnakuDlaEmaila=tablicaIndeksowPodzialow[3]+1;
+    int dlugoscEmaila=tablicaIndeksowPodzialow[4]-tablicaIndeksowPodzialow[3]-1;
+    string email(liniaZDanymi,indeksPierwszegoZnakuDlaEmaila,dlugoscEmaila);
 
-    string email(liniaZDanymi,tablicaIndeksowPodzialow[3]+1,tablicaIndeksowPodzialow[4]-tablicaIndeksowPodzialow[3]-1);
-
-    string numerString(liniaZDanymi,tablicaIndeksowPodzialow[4]+1,tablicaIndeksowPodzialow[5]-tablicaIndeksowPodzialow[4]-1);
-
+    int indeksPierwszegoZnakuDlaNumeruString=tablicaIndeksowPodzialow[4]+1;
+    int dlugoscNumeruString=tablicaIndeksowPodzialow[5]-tablicaIndeksowPodzialow[4]-1;
+    string numerString(liniaZDanymi,indeksPierwszegoZnakuDlaNumeruString,dlugoscNumeruString);
     int numer=atoi(numerString.c_str());
-    string adres(liniaZDanymi,tablicaIndeksowPodzialow[5]+1,tablicaIndeksowPodzialow[6]-tablicaIndeksowPodzialow[5]-1);
+
+    int indeksPierwszegoZnakuDlaAdresu=tablicaIndeksowPodzialow[5]+1;
+    int dlugoscAdresu=tablicaIndeksowPodzialow[6]-tablicaIndeksowPodzialow[5]-1;
+    string adres(liniaZDanymi,indeksPierwszegoZnakuDlaAdresu,dlugoscAdresu);
 
     Adresat kontaktDoPrzesylaniaDanych;
     kontaktDoPrzesylaniaDanych.id=id;
