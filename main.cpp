@@ -29,7 +29,7 @@ void wyszukajPoNazwisku(vector<Adresat> kontakty, int idZalogowanegoUzytkownika)
 void usunAdresata(vector <Adresat> &kontakty, int idZalogowanegoUzytkownika);
 void modyfikujKontakt(vector <Adresat> &kontakty, int idZalogowanegoUzytkownika);
 
-void zapiszDoPlikuKontakty(vector <Adresat> kontakty);
+void zapiszDoPlikuKontakty(vector <Adresat> kontakty, int idZalogowanegoUzytkownika);
 void odczytajKontantyZPlikuDlaUzytkownikaNiezalogowanegoIZapiszDoPlikuTymczasowego(int idAktualnieZalogowanegoUzytkownika);
 void odczytajKontantyZPlikuDlaUzytkownikaZalogowanegoIZapiszDoPliku(int idAktualnieZalogowanegoUzytkownika);
 void przeniesienieKontaktowZPlikuTymczasowego();
@@ -231,7 +231,7 @@ void usunAdresata(vector <Adresat> &kontakty, int idZalogowanegoUzytkownika) {
                             kontakty.erase(kontakty.begin()+i);
                             cout<<"Kontakt zostal usuniety"<<endl;
                             system("pause");
-                            zapiszDoPlikuKontakty(kontakty);
+                            zapiszDoPlikuKontakty(kontakty, idZalogowanegoUzytkownika);
                             break;
                         } else cout<<"Kontakt nie zostal usuniety"<<endl;
                     } else {
@@ -242,6 +242,7 @@ void usunAdresata(vector <Adresat> &kontakty, int idZalogowanegoUzytkownika) {
                 if(i==kontakty.size()-1) {
                     cout<<"Nie ma na liscie kontaktu z numerem: "<<numerIDAdresataDoUsuniecia<<endl;
                     system("pause");
+                    przeniesienieKontaktowZPlikuTymczasowego();
                     break;
                 }
             }
@@ -316,7 +317,7 @@ void modyfikujKontakt(vector <Adresat> &kontakty, int idZalogowanegoUzytkownika)
                 break;
             }
         }
-        zapiszDoPlikuKontakty(kontakty);
+        zapiszDoPlikuKontakty(kontakty, idZalogowanegoUzytkownika);
     } else {
         system("cls");
         cout<<"Brak kontaktow do modyfikacji. Rozpocznij dodawanie kontaktow."<<endl;
@@ -325,7 +326,10 @@ void modyfikujKontakt(vector <Adresat> &kontakty, int idZalogowanegoUzytkownika)
 
 }
 
-void zapiszDoPlikuKontakty(vector <Adresat> kontakty) {
+void zapiszDoPlikuKontakty(vector <Adresat> kontakty, int idZalogowanegoUzytkownika) {
+
+    odczytajKontantyZPlikuDlaUzytkownikaNiezalogowanegoIZapiszDoPlikuTymczasowego(idZalogowanegoUzytkownika);
+    odczytajKontantyZPlikuDlaUzytkownikaZalogowanegoIZapiszDoPliku(idZalogowanegoUzytkownika);
 
     fstream plik;
     plik.open("Adresaci.txt",ios::out);
@@ -343,6 +347,7 @@ void zapiszDoPlikuKontakty(vector <Adresat> kontakty) {
     plik.close();
     cout<<"\nPlik z lista kontaktow zostal pomyslnie zaktualizowany.\n";
     system("pause");
+    przeniesienieKontaktowZPlikuTymczasowego();
 }
 void odczytajKontantyZPlikuDlaUzytkownikaNiezalogowanegoIZapiszDoPlikuTymczasowego(int idAktualnieZalogowanegoUzytkownika) {
     vector <Adresat> kontakty;
@@ -409,32 +414,32 @@ void odczytajKontantyZPlikuDlaUzytkownikaZalogowanegoIZapiszDoPliku(int idAktual
     }
     plikTymczasowy.close();
 }
-void przeniesienieKontaktowZPlikuTymczasowego(vector <Adresat> kontakty) {
+void przeniesienieKontaktowZPlikuTymczasowego() {
     vector <Adresat> kontaktyDoPrzeniesienia;
-    fstream plik;
-    plik.open("Adresaci_tymczasowy.txt",ios::in);
-    if(plik.good()==true) {
+    fstream plikTymczasowy;
+    plikTymczasowy.open("Adresaci_tymczasowy.txt",ios::in);
+    if(plikTymczasowy.good()==true) {
         string liniaZDanymi;
         int i=1;
-        while(getline(plik,liniaZDanymi)) {
+        while(getline(plikTymczasowy,liniaZDanymi)) {
             kontaktyDoPrzeniesienia.push_back(rozszyfrujDaneKontaktu(liniaZDanymi));
             i++;
         }
-        plik.close();
+        plikTymczasowy.close();
     }
-    fstream plikTymczasowy;
-    plikTymczasowy.open("Adresaci.txt",ios::out|ios::app);
+    fstream plik;
+    plik.open("Adresaci.txt",ios::out|ios::app);
 
     if(kontaktyDoPrzeniesienia.size()>=1) {
         for (int i=0; i<=kontaktyDoPrzeniesienia.size()-1; i++) {
-            plikTymczasowy<<kontaktyDoPrzeniesienia[i].id<<"|";
-            plikTymczasowy<<kontaktyDoPrzeniesienia[i].idUzytkownika<<"|";
-            plikTymczasowy<<kontaktyDoPrzeniesienia[i].imie<<"|";
-            plikTymczasowy<<kontaktyDoPrzeniesienia[i].nazwisko<<"|";
-            plikTymczasowy<<kontaktyDoPrzeniesienia[i].email<<"|";
-            plikTymczasowy<<kontaktyDoPrzeniesienia[i].numerTelefonu<<"|";
-            plikTymczasowy<<kontaktyDoPrzeniesienia[i].adres<<"|";
-            plikTymczasowy<<endl;
+            plik<<kontaktyDoPrzeniesienia[i].id<<"|";
+            plik<<kontaktyDoPrzeniesienia[i].idUzytkownika<<"|";
+            plik<<kontaktyDoPrzeniesienia[i].imie<<"|";
+            plik<<kontaktyDoPrzeniesienia[i].nazwisko<<"|";
+            plik<<kontaktyDoPrzeniesienia[i].email<<"|";
+            plik<<kontaktyDoPrzeniesienia[i].numerTelefonu<<"|";
+            plik<<kontaktyDoPrzeniesienia[i].adres<<"|";
+            plik<<endl;
         }
     }
     plikTymczasowy.close();
@@ -490,16 +495,28 @@ Adresat rozszyfrujDaneKontaktu(string liniaZDanymi) {
             indeksWykryciaZnakuPodzialu++;
         }
     }
-    string idZalogowanegoUzytkownikaString (liniaZDanymi,tablicaIndeksowPodzialow[0]+1,tablicaIndeksowPodzialow[1]-tablicaIndeksowPodzialow[0]-1);
-    int idZalogowanegoUzytkownika = atoi(idZalogowanegoUzytkownikaString.c_str());
+
+
+
     string idString(liniaZDanymi,0,tablicaIndeksowPodzialow[0]);
     int id = atoi(idString.c_str());
+
+    string idZalogowanegoUzytkownikaString (liniaZDanymi,tablicaIndeksowPodzialow[0]+1,tablicaIndeksowPodzialow[1]-tablicaIndeksowPodzialow[0]-1);
+    int idZalogowanegoUzytkownika = atoi(idZalogowanegoUzytkownikaString.c_str());
+
+
+
     string imie(liniaZDanymi,tablicaIndeksowPodzialow[1]+1,tablicaIndeksowPodzialow[2]-tablicaIndeksowPodzialow[1]-1);
+
     string nazwisko(liniaZDanymi,tablicaIndeksowPodzialow[2]+1,tablicaIndeksowPodzialow[3]-tablicaIndeksowPodzialow[2]-1);
+
     string email(liniaZDanymi,tablicaIndeksowPodzialow[3]+1,tablicaIndeksowPodzialow[4]-tablicaIndeksowPodzialow[3]-1);
+
     string numerString(liniaZDanymi,tablicaIndeksowPodzialow[4]+1,tablicaIndeksowPodzialow[5]-tablicaIndeksowPodzialow[4]-1);
+
     int numer=atoi(numerString.c_str());
     string adres(liniaZDanymi,tablicaIndeksowPodzialow[5]+1,tablicaIndeksowPodzialow[6]-tablicaIndeksowPodzialow[5]-1);
+
     Adresat kontaktDoPrzesylaniaDanych;
     kontaktDoPrzesylaniaDanych.id=id;
     kontaktDoPrzesylaniaDanych.imie=imie;
@@ -626,8 +643,8 @@ void logowanie() {
             cout<<"Podaj haslo uzytkownika: ";
             cin>>podaneHaslo;
             if(podaneHaslo==uzytkownicy[i].haslo) {
-                odczytajKontantyZPlikuDlaUzytkownikaNiezalogowanegoIZapiszDoPlikuTymczasowego(uzytkownicy[i].idUzytkownika);
-                odczytajKontantyZPlikuDlaUzytkownikaZalogowanegoIZapiszDoPliku(uzytkownicy[i].idUzytkownika);
+                //odczytajKontantyZPlikuDlaUzytkownikaNiezalogowanegoIZapiszDoPlikuTymczasowego(uzytkownicy[i].idUzytkownika);
+                //odczytajKontantyZPlikuDlaUzytkownikaZalogowanegoIZapiszDoPliku(uzytkownicy[i].idUzytkownika);
                 uruchomMenuUzytkownika(uzytkownicy[i].idUzytkownika,uzytkownicy);
             } else cout<<"Podano nieprawidlowe haslo"<<endl;
         } else if(i==uzytkownicy.size()&&podaneHaslo=="") cout<<"Uzytkownik o nazwie "<<podanaNazwa<<" nie posiada jeszcze konta"<<endl;
@@ -653,7 +670,7 @@ void uruchomMenuUzytkownika(int idZalogowanegoUzytkownika, vector <Uzytkownik> u
         if(wybor=='1') {
             system("cls");
             kontakty.push_back(dodajKontakt(kontakty,idZalogowanegoUzytkownika, okreslenieKolejnegoNumeruIdDlaKontaktuNaPodstawiePlikuTymczasowegoOrazPamieci(kontakty)));
-            zapiszDoPlikuKontakty(kontakty);
+            zapiszDoPlikuKontakty(kontakty, idZalogowanegoUzytkownika);
         } else if(wybor=='2') {
             system("cls");
             wyszukajPoImieniu(kontakty, idZalogowanegoUzytkownika);
@@ -671,41 +688,9 @@ void uruchomMenuUzytkownika(int idZalogowanegoUzytkownika, vector <Uzytkownik> u
         } else if(wybor=='7') {
             zmienHaslo(idZalogowanegoUzytkownika, uzytkownicy);
         } else if(wybor=='9') {
-            przeniesienieKontaktowZPlikuTymczasowego(kontakty);
             wyswietlMenuLogowania();
-            zapiszDoPlikuKontakty(kontakty);
+            zapiszDoPlikuKontakty(kontakty, idZalogowanegoUzytkownika);
 
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
