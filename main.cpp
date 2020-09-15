@@ -20,7 +20,7 @@ struct Uzytkownik {
 };
 
 Adresat dodajKontakt(vector<Adresat> kontakty, int idZalogowanegoUzytkownika, int ostatniZajetyAdresID);
-int okreslenieKolejnegoNumeruIdDlaKontaktuNaPodstawiePlikuTymczasowegoOrazPamieci(vector <Adresat> kontakty);
+int okreslenieKolejnegoNumeruIdDlaKontaktuNaPodstawiePliku();
 int weryfikacjaPoprawnosciNumeru();
 string weryfikacjaPoprawnosciMaila();
 void wyswietlanieWszystkichKontaktow(vector <Adresat> kontakty, int idZalogowanegoUzytkownika);
@@ -32,7 +32,7 @@ void modyfikujKontakt(vector <Adresat> &kontakty, int idZalogowanegoUzytkownika)
 void zapiszDoPlikuKontakty(vector <Adresat> kontakty, int idZalogowanegoUzytkownika);
 void odczytajKontantyZPlikuDlaUzytkownikaNiezalogowanegoIZapiszDoPlikuTymczasowego(int idAktualnieZalogowanegoUzytkownika);
 void odczytajKontantyZPlikuDlaUzytkownikaZalogowanegoIZapiszDoPliku(int idAktualnieZalogowanegoUzytkownika);
-void przeniesienieKontaktowZPlikuTymczasowego();
+void przeniesienieKontaktowZPlikuTymczasowegoISortowanie(vector <Adresat> kontakty);
 vector <Adresat> odczytajKontaktyZPlikuDlaUzytkownikaZalogowanego(int idAktualnieZalogowanegoUzytkownika);
 int wyznaczIDUzytkownikaKtoryStworzylKontakt(string liniaZDanymi);
 Adresat rozszyfrujDaneKontaktu(string liniaZDanymi);
@@ -72,20 +72,15 @@ Adresat dodajKontakt(vector<Adresat> kontakty, int idZalogowanegoUzytkownika, in
     kontaktDoDodania.idUzytkownika=idZalogowanegoUzytkownika;
     return kontaktDoDodania;
 }
-int okreslenieKolejnegoNumeruIdDlaKontaktuNaPodstawiePlikuTymczasowegoOrazPamieci(vector <Adresat> kontakty) {
+int okreslenieKolejnegoNumeruIdDlaKontaktuNaPodstawiePliku() {
     vector <int> numeryIDKontaktow;
 
-    if(kontakty.size()>0) {
-        for(int i=0; i<kontakty.size(); i++) {
-            numeryIDKontaktow.push_back(kontakty[i].id);
-        }
-    }
-    fstream plikTymczasowy;
-    plikTymczasowy.open("Adresaci_tymczasowy.txt",ios::in);
-    if(plikTymczasowy.good()==true) {
+    fstream plik;
+    plik.open("Adresaci.txt",ios::in);
+    if(plik.good()==true) {
         string liniaZDanymi;
         int i=0;
-        while(getline(plikTymczasowy,liniaZDanymi)) {
+        while(getline(plik,liniaZDanymi)) {
             int indeksWykryciaZnakuPodzialu=0;
             for(int k=0; k<liniaZDanymi.length(); k++) {
                 if(liniaZDanymi[k]=='|') {
@@ -98,7 +93,7 @@ int okreslenieKolejnegoNumeruIdDlaKontaktuNaPodstawiePlikuTymczasowegoOrazPamiec
                 }
             }
         }
-        plikTymczasowy.close();
+        plik.close();
     }
 
     if(numeryIDKontaktow.size()>0) {
@@ -106,7 +101,6 @@ int okreslenieKolejnegoNumeruIdDlaKontaktuNaPodstawiePlikuTymczasowegoOrazPamiec
     } else {
         return 0;
     }
-
 }
 int weryfikacjaPoprawnosciNumeru() {
     int poprawnyNumerTelefonu=0;
@@ -242,7 +236,7 @@ void usunAdresata(vector <Adresat> &kontakty, int idZalogowanegoUzytkownika) {
                 if(i==kontakty.size()-1) {
                     cout<<"Nie ma na liscie kontaktu z numerem: "<<numerIDAdresataDoUsuniecia<<endl;
                     system("pause");
-                    przeniesienieKontaktowZPlikuTymczasowego();
+                    przeniesienieKontaktowZPlikuTymczasowegoISortowanie(kontakty);
                     break;
                 }
             }
@@ -347,7 +341,7 @@ void zapiszDoPlikuKontakty(vector <Adresat> kontakty, int idZalogowanegoUzytkown
     plik.close();
     cout<<"\nPlik z lista kontaktow zostal pomyslnie zaktualizowany.\n";
     system("pause");
-    przeniesienieKontaktowZPlikuTymczasowego();
+    przeniesienieKontaktowZPlikuTymczasowegoISortowanie(kontakty);
 }
 void odczytajKontantyZPlikuDlaUzytkownikaNiezalogowanegoIZapiszDoPlikuTymczasowego(int idAktualnieZalogowanegoUzytkownika) {
     vector <Adresat> kontakty;
@@ -414,34 +408,49 @@ void odczytajKontantyZPlikuDlaUzytkownikaZalogowanegoIZapiszDoPliku(int idAktual
     }
     plikTymczasowy.close();
 }
-void przeniesienieKontaktowZPlikuTymczasowego() {
-    vector <Adresat> kontaktyDoPrzeniesienia;
+void przeniesienieKontaktowZPlikuTymczasowegoISortowanie(vector <Adresat> kontakty) {
+
+    vector <int> numeryKontaktowDoPosortowania;
+
     fstream plikTymczasowy;
     plikTymczasowy.open("Adresaci_tymczasowy.txt",ios::in);
     if(plikTymczasowy.good()==true) {
         string liniaZDanymi;
         int i=1;
         while(getline(plikTymczasowy,liniaZDanymi)) {
-            kontaktyDoPrzeniesienia.push_back(rozszyfrujDaneKontaktu(liniaZDanymi));
+            kontakty.push_back(rozszyfrujDaneKontaktu(liniaZDanymi));
             i++;
         }
         plikTymczasowy.close();
     }
+
+    for(int i=0; i<kontakty.size(); i++) {
+        numeryKontaktowDoPosortowania.push_back(kontakty[i].id);
+    }
+
+    sort(numeryKontaktowDoPosortowania.begin(),numeryKontaktowDoPosortowania.end());
+
+    remove("Adresaci.txt");
+
     fstream plik;
     plik.open("Adresaci.txt",ios::out|ios::app);
-
-    if(kontaktyDoPrzeniesienia.size()>=1) {
-        for (int i=0; i<=kontaktyDoPrzeniesienia.size()-1; i++) {
-            plik<<kontaktyDoPrzeniesienia[i].id<<"|";
-            plik<<kontaktyDoPrzeniesienia[i].idUzytkownika<<"|";
-            plik<<kontaktyDoPrzeniesienia[i].imie<<"|";
-            plik<<kontaktyDoPrzeniesienia[i].nazwisko<<"|";
-            plik<<kontaktyDoPrzeniesienia[i].email<<"|";
-            plik<<kontaktyDoPrzeniesienia[i].numerTelefonu<<"|";
-            plik<<kontaktyDoPrzeniesienia[i].adres<<"|";
-            plik<<endl;
+    for(int i=0; i<numeryKontaktowDoPosortowania.size(); i++) {
+        for(int j=0; j<numeryKontaktowDoPosortowania.size(); j++) {
+            if (numeryKontaktowDoPosortowania[i]==kontakty[j].id) {
+                if(kontakty.size()>=1) {
+                    plik<<kontakty[j].id<<"|";
+                    plik<<kontakty[j].idUzytkownika<<"|";
+                    plik<<kontakty[j].imie<<"|";
+                    plik<<kontakty[j].nazwisko<<"|";
+                    plik<<kontakty[j].email<<"|";
+                    plik<<kontakty[j].numerTelefonu<<"|";
+                    plik<<kontakty[j].adres<<"|";
+                    plik<<endl;
+                }
+            }
         }
     }
+
     plikTymczasowy.close();
     remove("Adresaci_tymczasowy.txt");
 }
@@ -497,13 +506,11 @@ Adresat rozszyfrujDaneKontaktu(string liniaZDanymi) {
     }
 
 
-
     string idString(liniaZDanymi,0,tablicaIndeksowPodzialow[0]);
     int id = atoi(idString.c_str());
 
     string idZalogowanegoUzytkownikaString (liniaZDanymi,tablicaIndeksowPodzialow[0]+1,tablicaIndeksowPodzialow[1]-tablicaIndeksowPodzialow[0]-1);
     int idZalogowanegoUzytkownika = atoi(idZalogowanegoUzytkownikaString.c_str());
-
 
 
     string imie(liniaZDanymi,tablicaIndeksowPodzialow[1]+1,tablicaIndeksowPodzialow[2]-tablicaIndeksowPodzialow[1]-1);
@@ -643,8 +650,6 @@ void logowanie() {
             cout<<"Podaj haslo uzytkownika: ";
             cin>>podaneHaslo;
             if(podaneHaslo==uzytkownicy[i].haslo) {
-                //odczytajKontantyZPlikuDlaUzytkownikaNiezalogowanegoIZapiszDoPlikuTymczasowego(uzytkownicy[i].idUzytkownika);
-                //odczytajKontantyZPlikuDlaUzytkownikaZalogowanegoIZapiszDoPliku(uzytkownicy[i].idUzytkownika);
                 uruchomMenuUzytkownika(uzytkownicy[i].idUzytkownika,uzytkownicy);
             } else cout<<"Podano nieprawidlowe haslo"<<endl;
         } else if(i==uzytkownicy.size()&&podaneHaslo=="") cout<<"Uzytkownik o nazwie "<<podanaNazwa<<" nie posiada jeszcze konta"<<endl;
@@ -669,7 +674,7 @@ void uruchomMenuUzytkownika(int idZalogowanegoUzytkownika, vector <Uzytkownik> u
         wybor=_getch();
         if(wybor=='1') {
             system("cls");
-            kontakty.push_back(dodajKontakt(kontakty,idZalogowanegoUzytkownika, okreslenieKolejnegoNumeruIdDlaKontaktuNaPodstawiePlikuTymczasowegoOrazPamieci(kontakty)));
+            kontakty.push_back(dodajKontakt(kontakty,idZalogowanegoUzytkownika, okreslenieKolejnegoNumeruIdDlaKontaktuNaPodstawiePliku()));
             zapiszDoPlikuKontakty(kontakty, idZalogowanegoUzytkownika);
         } else if(wybor=='2') {
             system("cls");
