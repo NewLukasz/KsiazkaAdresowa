@@ -495,55 +495,40 @@ int wyznaczIDUzytkownikaKtoryStworzylKontakt(string liniaZDanymi) {
     return idZalogowanegoUzytkownika;
 }
 Adresat rozszyfrujDaneKontaktu(string liniaZDanymi) {
-    int const ILOSC_KOLUMN=7;
-    int tablicaIndeksowPodzialow[ILOSC_KOLUMN];
-    int indeksWykryciaZnakuPodzialu=0;
-    for(int k=0; k<liniaZDanymi.length(); k++) {
-        if(liniaZDanymi[k]=='|') {
-            tablicaIndeksowPodzialow[indeksWykryciaZnakuPodzialu]=k;
-            indeksWykryciaZnakuPodzialu++;
+    vector <string> podzieloneDaneAdresata;
+
+    for(int indeks=0; indeks<liniaZDanymi.length(); indeks++) {
+        if(liniaZDanymi[indeks]=='|') {
+            string informacjaOAdresacie(liniaZDanymi,0,indeks);
+            podzieloneDaneAdresata.push_back(informacjaOAdresacie);
+            liniaZDanymi.erase(0,indeks+1);
+            indeks=0;
         }
     }
 
-    int dlugoscIdString=tablicaIndeksowPodzialow[0];
-    string idString(liniaZDanymi,0,dlugoscIdString);
-    int id = atoi(idString.c_str());
+        string idString=podzieloneDaneAdresata[0];
+        int id = atoi(idString.c_str());
 
-    int indeksPierwszegoZnakuDlaidZalogowanegoUzytkownikaString=tablicaIndeksowPodzialow[0]+1;
-    int dlugoscIdZalogowanegoUzytkownikaString=tablicaIndeksowPodzialow[1]-tablicaIndeksowPodzialow[0]-1;
-    string idZalogowanegoUzytkownikaString (liniaZDanymi,indeksPierwszegoZnakuDlaidZalogowanegoUzytkownikaString,dlugoscIdZalogowanegoUzytkownikaString);
-    int idZalogowanegoUzytkownika = atoi(idZalogowanegoUzytkownikaString.c_str());
+        string idZalogowanegoUzytkownikaString = podzieloneDaneAdresata[1];
+        int idZalogowanegoUzytkownika = atoi(idZalogowanegoUzytkownikaString.c_str());
 
-    int indeksPierszegoZnakuDlaImienia=tablicaIndeksowPodzialow[1]+1;
-    int dlugoscImienia=tablicaIndeksowPodzialow[2]-tablicaIndeksowPodzialow[1]-1;
-    string imie(liniaZDanymi,indeksPierszegoZnakuDlaImienia,dlugoscImienia);
+        string imie=podzieloneDaneAdresata[2];
+        string nazwisko=podzieloneDaneAdresata[3];
+        string email=podzieloneDaneAdresata[4];
+        string numerString=podzieloneDaneAdresata[5];
+        int numer=atoi(numerString.c_str());
 
-    int indeksPierwszegoZnakuDlaNazwiska=tablicaIndeksowPodzialow[2]+1;
-    int dlugoscNazwiska=tablicaIndeksowPodzialow[3]-tablicaIndeksowPodzialow[2]-1;
-    string nazwisko(liniaZDanymi,indeksPierwszegoZnakuDlaNazwiska,dlugoscNazwiska);
+        string adres=podzieloneDaneAdresata[6];
 
-    int indeksPierwszegoZnakuDlaEmaila=tablicaIndeksowPodzialow[3]+1;
-    int dlugoscEmaila=tablicaIndeksowPodzialow[4]-tablicaIndeksowPodzialow[3]-1;
-    string email(liniaZDanymi,indeksPierwszegoZnakuDlaEmaila,dlugoscEmaila);
-
-    int indeksPierwszegoZnakuDlaNumeruString=tablicaIndeksowPodzialow[4]+1;
-    int dlugoscNumeruString=tablicaIndeksowPodzialow[5]-tablicaIndeksowPodzialow[4]-1;
-    string numerString(liniaZDanymi,indeksPierwszegoZnakuDlaNumeruString,dlugoscNumeruString);
-    int numer=atoi(numerString.c_str());
-
-    int indeksPierwszegoZnakuDlaAdresu=tablicaIndeksowPodzialow[5]+1;
-    int dlugoscAdresu=tablicaIndeksowPodzialow[6]-tablicaIndeksowPodzialow[5]-1;
-    string adres(liniaZDanymi,indeksPierwszegoZnakuDlaAdresu,dlugoscAdresu);
-
-    Adresat kontaktDoPrzesylaniaDanych;
-    kontaktDoPrzesylaniaDanych.id=id;
-    kontaktDoPrzesylaniaDanych.imie=imie;
-    kontaktDoPrzesylaniaDanych.nazwisko=nazwisko;
-    kontaktDoPrzesylaniaDanych.email=email;
-    kontaktDoPrzesylaniaDanych.numerTelefonu=numer;
-    kontaktDoPrzesylaniaDanych.adres=adres;
-    kontaktDoPrzesylaniaDanych.idUzytkownika=idZalogowanegoUzytkownika;
-    return kontaktDoPrzesylaniaDanych;
+        Adresat kontaktDoPrzesylaniaDanych;
+        kontaktDoPrzesylaniaDanych.id=id;
+        kontaktDoPrzesylaniaDanych.imie=imie;
+        kontaktDoPrzesylaniaDanych.nazwisko=nazwisko;
+        kontaktDoPrzesylaniaDanych.email=email;
+        kontaktDoPrzesylaniaDanych.numerTelefonu=numer;
+        kontaktDoPrzesylaniaDanych.adres=adres;
+        kontaktDoPrzesylaniaDanych.idUzytkownika=idZalogowanegoUzytkownika;
+        return kontaktDoPrzesylaniaDanych;
 }
 
 void zarejestrujUzytkownika() {
