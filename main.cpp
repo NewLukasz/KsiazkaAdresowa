@@ -227,16 +227,18 @@ void usunAdresata(vector <Adresat> &kontakty, int idZalogowanegoUzytkownika) {
                             system("pause");
                             zapiszDoPlikuKontakty(kontakty, idZalogowanegoUzytkownika);
                             break;
-                        } else cout<<"Kontakt nie zostal usuniety"<<endl;
+                        } else {
+                            cout<<"Zostal wybrany inny znak. Kontakt nie zostal usuniety."<<endl;
+                            system("pause");
+                        }
                     } else {
-                        cout<<"Brak takiego kontaktu na Twojej liscie"<<endl;
+                        cout<<"Brak kontaktu na liscie."<<endl;
                         system("pause");
                     }
                 }
                 if(i==kontakty.size()-1) {
                     cout<<"Nie ma na liscie kontaktu z numerem: "<<numerIDAdresataDoUsuniecia<<endl;
                     system("pause");
-                    przeniesienieKontaktowZPlikuTymczasowegoISortowanie(kontakty);
                     break;
                 }
             }
@@ -249,6 +251,7 @@ void modyfikujKontakt(vector <Adresat> &kontakty, int idZalogowanegoUzytkownika)
     if(kontakty.size()>0) {
         system("cls");
         int numerIDDoModyfikacji=0;
+        int statusModyfikacji=0;
         wyswietlanieWszystkichKontaktow(kontakty, idZalogowanegoUzytkownika);
         cout<<"Podaj ID kontaktu do modyfikacji: ";
         cin>>numerIDDoModyfikacji;
@@ -271,6 +274,7 @@ void modyfikujKontakt(vector <Adresat> &kontakty, int idZalogowanegoUzytkownika)
                     cin>>imie;
                     kontakty[i].imie=imie;
                     cout<<"Dane zostaly zaktualizowane"<<endl;
+                    statusModyfikacji++;
                     system("pause");
                 } else if(wybor=='2') {
                     string nazwisko;
@@ -279,6 +283,7 @@ void modyfikujKontakt(vector <Adresat> &kontakty, int idZalogowanegoUzytkownika)
                     cin>>nazwisko;
                     kontakty[i].nazwisko=nazwisko;
                     cout<<"Dane zostaly zaktualizowane"<<endl;
+                    statusModyfikacji++;
                     system("pause");
                 } else if(wybor=='3') {
                     system("cls");
@@ -287,6 +292,7 @@ void modyfikujKontakt(vector <Adresat> &kontakty, int idZalogowanegoUzytkownika)
                     cin>>numerTelefonu;
                     kontakty[i].numerTelefonu=numerTelefonu;
                     cout<<"Dane zostaly zaktualizowane"<<endl;
+                    statusModyfikacji++;
                     system("pause");
                 } else if(wybor=='4') {
                     system("cls");
@@ -295,6 +301,7 @@ void modyfikujKontakt(vector <Adresat> &kontakty, int idZalogowanegoUzytkownika)
                     cin>>email;
                     kontakty[i].email=email;
                     cout<<"Dane zostaly zaktualizowane"<<endl;
+                    statusModyfikacji++;
                     system("pause");
                 } else if(wybor=='5') {
                     system("cls");
@@ -304,14 +311,17 @@ void modyfikujKontakt(vector <Adresat> &kontakty, int idZalogowanegoUzytkownika)
                     getline(cin,adres);
                     kontakty[i].adres=adres;
                     cout<<"Dane zostaly zaktualizowane"<<endl;
+                    statusModyfikacji++;
                     system("pause");
                 }
-            } else if(kontakty[i].idUzytkownika!=idZalogowanegoUzytkownika) {
-                cout<<"Nie ma mozliwosci modyfikacji kontaktu"<<endl;
-                break;
+                zapiszDoPlikuKontakty(kontakty, idZalogowanegoUzytkownika);
             }
         }
-        zapiszDoPlikuKontakty(kontakty, idZalogowanegoUzytkownika);
+        if(statusModyfikacji==0) {
+            cout<<"Modyfikacja nie powiodla sie"<<endl;
+            system("pause");
+        }
+
     } else {
         system("cls");
         cout<<"Brak kontaktow do modyfikacji. Rozpocznij dodawanie kontaktow."<<endl;
@@ -506,29 +516,29 @@ Adresat rozszyfrujDaneKontaktu(string liniaZDanymi) {
         }
     }
 
-        string idString=podzieloneDaneAdresata[0];
-        int id = atoi(idString.c_str());
+    string idString=podzieloneDaneAdresata[0];
+    int id = atoi(idString.c_str());
 
-        string idZalogowanegoUzytkownikaString = podzieloneDaneAdresata[1];
-        int idZalogowanegoUzytkownika = atoi(idZalogowanegoUzytkownikaString.c_str());
+    string idZalogowanegoUzytkownikaString = podzieloneDaneAdresata[1];
+    int idZalogowanegoUzytkownika = atoi(idZalogowanegoUzytkownikaString.c_str());
 
-        string imie=podzieloneDaneAdresata[2];
-        string nazwisko=podzieloneDaneAdresata[3];
-        string email=podzieloneDaneAdresata[4];
-        string numerString=podzieloneDaneAdresata[5];
-        int numer=atoi(numerString.c_str());
+    string imie=podzieloneDaneAdresata[2];
+    string nazwisko=podzieloneDaneAdresata[3];
+    string email=podzieloneDaneAdresata[4];
+    string numerString=podzieloneDaneAdresata[5];
+    int numer=atoi(numerString.c_str());
 
-        string adres=podzieloneDaneAdresata[6];
+    string adres=podzieloneDaneAdresata[6];
 
-        Adresat kontaktDoPrzesylaniaDanych;
-        kontaktDoPrzesylaniaDanych.id=id;
-        kontaktDoPrzesylaniaDanych.imie=imie;
-        kontaktDoPrzesylaniaDanych.nazwisko=nazwisko;
-        kontaktDoPrzesylaniaDanych.email=email;
-        kontaktDoPrzesylaniaDanych.numerTelefonu=numer;
-        kontaktDoPrzesylaniaDanych.adres=adres;
-        kontaktDoPrzesylaniaDanych.idUzytkownika=idZalogowanegoUzytkownika;
-        return kontaktDoPrzesylaniaDanych;
+    Adresat kontaktDoPrzesylaniaDanych;
+    kontaktDoPrzesylaniaDanych.id=id;
+    kontaktDoPrzesylaniaDanych.imie=imie;
+    kontaktDoPrzesylaniaDanych.nazwisko=nazwisko;
+    kontaktDoPrzesylaniaDanych.email=email;
+    kontaktDoPrzesylaniaDanych.numerTelefonu=numer;
+    kontaktDoPrzesylaniaDanych.adres=adres;
+    kontaktDoPrzesylaniaDanych.idUzytkownika=idZalogowanegoUzytkownika;
+    return kontaktDoPrzesylaniaDanych;
 }
 
 void zarejestrujUzytkownika() {
